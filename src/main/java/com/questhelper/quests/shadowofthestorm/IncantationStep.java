@@ -28,15 +28,15 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.requirements.item.ItemRequirement;
 import com.questhelper.steps.DetailedQuestStep;
 import java.util.Collections;
+
+import eventbus.events.MenuOptionClicked;
+import eventbus.events.WidgetLoaded;
 import net.runelite.api.ItemID;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 
 import java.util.HashMap;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.eventbus.Subscribe;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class IncantationStep extends DetailedQuestStep
@@ -85,7 +85,7 @@ public class IncantationStep extends DetailedQuestStep
 	/**
 	 * This checks for the demonic sigil being clicked, indicating the start of the incantation.
 	 */
-	@Subscribe
+	@Override
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if(event.getWidgetId() == WidgetInfo.INVENTORY.getId() && event.getMenuOption().equals("Chant"))

@@ -11,11 +11,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import eventbus.events.GameTick;
 import net.runelite.api.NpcID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class ChanceChallenge extends DetailedOwnerStep
 {
@@ -67,7 +67,7 @@ public class ChanceChallenge extends DetailedOwnerStep
 		spinD6 = new ObjectStep(getQuestHelper(), NullObjectID.NULL_17021, new WorldPoint(1739, 5060, 2), "Flip the south east die.");
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

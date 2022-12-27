@@ -2,10 +2,9 @@ package com.questhelper.quests.thefremennikisles;
 
 import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.NpcStep;
+import eventbus.events.GameTick;
 import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class KillTrolls extends NpcStep
 {
@@ -15,7 +14,7 @@ public class KillTrolls extends NpcStep
 		this.addAlternateNpcs(NpcID.ICE_TROLL_MALE_5829, NpcID.ICE_TROLL_FEMALE_5825, NpcID.ICE_TROLL_FEMALE_5830, NpcID.ICE_TROLL_RUNT_5823, NpcID.ICE_TROLL_RUNT_5828);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

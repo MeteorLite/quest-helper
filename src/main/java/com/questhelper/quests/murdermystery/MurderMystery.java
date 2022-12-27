@@ -41,6 +41,7 @@ import java.util.Map;
 import com.questhelper.rewards.ExperienceReward;
 import com.questhelper.rewards.ItemReward;
 import com.questhelper.rewards.QuestPointReward;
+import eventbus.events.VarbitChanged;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import com.questhelper.requirements.item.ItemRequirement;
@@ -54,9 +55,7 @@ import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
 import com.questhelper.requirements.conditional.Conditions;
 import com.questhelper.requirements.util.LogicType;
-import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.eventbus.Subscribe;
 
 @QuestDescriptor(
 	quest = QuestHelperQuest.MURDER_MYSTERY
@@ -135,7 +134,7 @@ public class MurderMystery extends BasicQuestHelper
 		return steps;
 	}
 
-	@Subscribe
+	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{
 		if (varbitChanged.getVarpId() != 195) return;

@@ -35,30 +35,20 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
+
+import eventbus.events.*;
 import lombok.NonNull;
+import meteor.ui.overlay.PanelComponent;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.NpcChanged;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
 import com.questhelper.QuestHelperPlugin;
 import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.requirements.ChatMessageRequirement;
 import com.questhelper.requirements.conditional.NpcCondition;
-import net.runelite.client.ui.overlay.components.PanelComponent;
-import org.apache.commons.lang3.ArrayUtils;
 
 /* Conditions are checked in the order they were added */
 public class ConditionalStep extends QuestStep implements OwnerStep
 {
-	@Inject
-	protected EventBus eventBus;
-
 	protected boolean started = false;
 
 	protected final LinkedHashMap<Requirement, QuestStep> steps;
@@ -177,7 +167,7 @@ public class ConditionalStep extends QuestStep implements OwnerStep
 		currentStep = null;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		if (started)
@@ -190,7 +180,7 @@ public class ConditionalStep extends QuestStep implements OwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGameStateChanged(final GameStateChanged event)
 	{
 		if (event.getGameState() == GameState.LOADING || event.getGameState() == GameState.HOPPING)
@@ -207,7 +197,7 @@ public class ConditionalStep extends QuestStep implements OwnerStep
 		requirements.add(requirement);
 	}
 
-	@Subscribe
+	@Override
 	public void onChatMessage(ChatMessage chatMessage)
 	{
 		if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE || chatMessage.getType() == ChatMessageType.ENGINE)
@@ -216,19 +206,19 @@ public class ConditionalStep extends QuestStep implements OwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onNpcSpawned(NpcSpawned event)
 	{
 		npcConditions.forEach(npc -> npc.checkNpcSpawned(event.getNpc()));
 	}
 
-	@Subscribe
+	@Override
 	public void onNpcDespawned(NpcDespawned event)
 	{
 		npcConditions.forEach(npc -> npc.checkNpcDespawned(event.getNpc()));
 	}
 
-	@Subscribe
+	@Override
 	public void onNpcChanged(NpcChanged npcCompositionChanged)
 	{
 		npcConditions.forEach(npc -> npc.checkNpcChanged(npcCompositionChanged));
@@ -271,7 +261,8 @@ public class ConditionalStep extends QuestStep implements OwnerStep
 	{
 		if (currentStep == null)
 		{
-			eventBus.register(step);
+			step.subscribe();
+			step.setEventListening(true);
 			step.startUp();
 			currentStep = step;
 			return;
@@ -280,7 +271,8 @@ public class ConditionalStep extends QuestStep implements OwnerStep
 		if (!step.equals(currentStep))
 		{
 			shutDownStep();
-			eventBus.register(step);
+			step.subscribe();
+			step.setEventListening(true);
 			step.startUp();
 			currentStep = step;
 		}
@@ -290,7 +282,7 @@ public class ConditionalStep extends QuestStep implements OwnerStep
 	{
 		if (currentStep != null)
 		{
-			eventBus.unregister(currentStep);
+			currentStep.unsubscribe();
 			currentStep.shutDown();
 			currentStep = null;
 		}

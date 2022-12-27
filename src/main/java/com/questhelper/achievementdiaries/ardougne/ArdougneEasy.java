@@ -26,6 +26,7 @@ package com.questhelper.achievementdiaries.ardougne;
 
 import com.questhelper.ItemCollections;
 import com.questhelper.QuestHelperQuest;
+import com.questhelper.panel.PanelDetails;
 import com.questhelper.questhelpers.ComplexStateQuestHelper;
 import com.questhelper.requirements.Requirement;
 import com.questhelper.requirements.player.SkillRequirement;
@@ -48,7 +49,6 @@ import net.runelite.api.Skill;
 import net.runelite.api.coords.WorldPoint;
 import com.questhelper.requirements.item.ItemRequirement;
 import com.questhelper.QuestDescriptor;
-import com.questhelper.panel.PanelDetails;
 import com.questhelper.steps.QuestStep;
 
 @QuestDescriptor(
@@ -215,66 +215,7 @@ public class ArdougneEasy extends ComplexStateQuestHelper
 	}
 
 	@Override
-	public List<PanelDetails> getPanels()
-	{
-		List<PanelDetails> allSteps = new ArrayList<>();
-
-		PanelDetails aleckSteps = new PanelDetails("Aleck's Hunter Emporium",
-			Collections.singletonList(alecksEmporium));
-		aleckSteps.setDisplayCondition(notAlecksEmporium);
-		aleckSteps.setLockingStep(alecksEmporiumTask);
-		allSteps.add(aleckSteps);
-
-		PanelDetails trawlerSteps = new PanelDetails("Fishing Trawler", Collections.singletonList(fishingTrawler));
-		trawlerSteps.setDisplayCondition(notFishingTrawler);
-		trawlerSteps.setLockingStep(fishingTrawlerTask);
-		allSteps.add(trawlerSteps);
-
-		PanelDetails swordSteps = new PanelDetails("Identify Sword", Collections.singletonList(identifySword),
-			rustySword, coins.quantity(100));
-		swordSteps.setDisplayCondition(notIdentifySword);
-		swordSteps.setLockingStep(identifySwordTask);
-		allSteps.add(swordSteps);
-
-		PanelDetails essSteps = new PanelDetails("Essence Mine", Collections.singletonList(essMine), runeMysteries);
-		essSteps.setDisplayCondition(notEssMine);
-		essSteps.setLockingStep(essMineTask);
-		allSteps.add(essSteps);
-
-		PanelDetails cakeSteps = new PanelDetails("Steal Cake", Collections.singletonList(stealCake),
-			new SkillRequirement(Skill.THIEVING, 5));
-		cakeSteps.setDisplayCondition(notStealCake);
-		cakeSteps.setLockingStep(stealCakeTask);
-		allSteps.add(cakeSteps);
-
-		PanelDetails silkSteps = new PanelDetails("Sell Silk", Collections.singletonList(sellSilk), silk);
-		silkSteps.setDisplayCondition(notSellSilk);
-		silkSteps.setLockingStep(sellSilkTask);
-		allSteps.add(silkSteps);
-
-		PanelDetails petSteps = new PanelDetails("Pet Insurance", Collections.singletonList(probitaPet));
-		petSteps.setDisplayCondition(notProbitaPet);
-		petSteps.setLockingStep(probitaPetTask);
-		allSteps.add(petSteps);
-
-		PanelDetails altarSteps = new PanelDetails("Restore Prayer", Collections.singletonList(eastArdyAltar));
-		altarSteps.setDisplayCondition(notEastArdyAltar);
-		altarSteps.setLockingStep(eastArdyAltarTask);
-		allSteps.add(altarSteps);
-
-		PanelDetails leverSteps = new PanelDetails("Wilderness Lever", Collections.singletonList(wildyLever));
-		leverSteps.setDisplayCondition(notWildyLever);
-		leverSteps.setLockingStep(wildyLeverTask);
-		allSteps.add(leverSteps);
-
-		PanelDetails campSteps = new PanelDetails("Combat Camp", Collections.singletonList(enterCombatCamp),
-			biohazard);
-		campSteps.setDisplayCondition(notEnterCombatCamp);
-		campSteps.setLockingStep(enterCombatCampTask);
-		allSteps.add(campSteps);
-
-		allSteps.add(new PanelDetails("Finishing off", Collections.singletonList(claimReward)));
-
-		return allSteps;
+	public List<PanelDetails> getPanels() {
+		return null;
 	}
 }

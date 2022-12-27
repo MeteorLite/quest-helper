@@ -40,11 +40,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 public class StatuePuzzle extends DetailedOwnerStep
 {
@@ -142,7 +142,7 @@ public class StatuePuzzle extends DetailedOwnerStep
 	}
 
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		Widget widgetPanel = client.getWidget(229, 1);

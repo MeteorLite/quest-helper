@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import lombok.Getter;
+import meteor.ui.components.LineComponent;
 import net.runelite.api.Client;
-import net.runelite.client.ui.overlay.components.LineComponent;
 
 public abstract class AbstractRequirement implements Requirement
 {

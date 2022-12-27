@@ -32,14 +32,14 @@ import com.questhelper.requirements.util.InventorySlots;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.function.Predicate;
+
+import eventbus.events.GameTick;
+import meteor.util.OverlayUtil;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.Player;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
 public class DigStep extends DetailedQuestStep
 {
@@ -62,7 +62,7 @@ public class DigStep extends DetailedQuestStep
 		this.expectedItemPredicate = predicate == null ? i -> true : predicate;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		super.onGameTick(event);
@@ -96,7 +96,7 @@ public class DigStep extends DetailedQuestStep
 			return;
 		}
 
-		OverlayUtil.renderTileOverlay(client, graphics, localLocation, getSpadeImage(), questHelper.getConfig().targetOverlayColor());
+		OverlayUtil.INSTANCE.renderTileOverlay(graphics, localLocation, getSpadeImage(), questHelper.getConfig().targetOverlayColor());
 	}
 
 	private BufferedImage getSpadeImage()

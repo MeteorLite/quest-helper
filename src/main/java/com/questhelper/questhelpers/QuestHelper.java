@@ -49,48 +49,40 @@ import com.questhelper.rewards.QuestPointReward;
 import com.questhelper.rewards.UnlockReward;
 import lombok.Getter;
 import lombok.Setter;
+import meteor.Main;
+import meteor.config.ConfigManager;
+import meteor.plugins.EventSubscriber;
+import meteor.plugins.PluginManager;
 import net.runelite.api.Client;
 import net.runelite.api.QuestState;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
 import com.questhelper.steps.OwnerStep;
 import com.questhelper.steps.QuestStep;
-import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
-public abstract class QuestHelper implements Module, QuestDebugRenderer
+public abstract class QuestHelper extends EventSubscriber implements Module, QuestDebugRenderer
 {
-	@Inject
-	protected Client client;
-
-	@Inject
+	protected Client client = Main.client;
 	@Getter
-	protected ConfigManager configManager;
+	protected ConfigManager configManager = ConfigManager.INSTANCE;
 
-	@Inject
-	protected QuestBank questBank;
-
-	@Getter
-	@Setter
-	protected QuestHelperConfig config;
-
-	@Inject
-	private EventBus eventBus;
+	public QuestBank questBank = QuestBank.INSTANCE;
 
 	@Getter
 	private QuestStep currentStep;
 
-	@Getter
 	@Setter
-	private QuestHelperQuest quest;
+	public QuestHelperQuest quest;
+
+	public QuestHelperQuest getQuest() {
+		return quest;
+	}
 
 	@Setter
-	private Injector injector;
-
-	@Setter
 	@Getter
-	protected QuestHelperPlugin questHelperPlugin;
+	protected QuestHelperPlugin questHelperPlugin = (QuestHelperPlugin) PluginManager.INSTANCE.get(QuestHelperPlugin.class);
+
+	@Getter
+	@Setter
+	public QuestHelperConfig config = questHelperPlugin.getConfig();
 
 	@Override
 	public void configure(Binder binder)
@@ -113,7 +105,8 @@ public abstract class QuestHelper implements Module, QuestDebugRenderer
 		{
 			currentStep = step;
 			currentStep.startUp();
-			eventBus.register(currentStep);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 		}
 		else
 		{
@@ -125,7 +118,7 @@ public abstract class QuestHelper implements Module, QuestDebugRenderer
 	{
 		if (currentStep != null)
 		{
-			eventBus.unregister(currentStep);
+			currentStep.unsubscribe();
 			currentStep.shutDown();
 			currentStep = null;
 		}
@@ -149,7 +142,7 @@ public abstract class QuestHelper implements Module, QuestDebugRenderer
 		{
 			if (questStep != null)
 			{
-				injector.injectMembers(questStep);
+				//injector.injectMembers(questStep);
 			}
 		}
 		catch (CreationException ex)
@@ -177,26 +170,6 @@ public abstract class QuestHelper implements Module, QuestDebugRenderer
 
 		return getGeneralRequirements().stream().filter(Objects::nonNull).allMatch(r ->
 			!r.shouldConsiderForFilter() || r.check(client));
-	}
-
-	@Override
-	public void renderDebugOverlay(Graphics graphics, QuestHelperPlugin plugin, PanelComponent panelComponent)
-	{
-		if (!plugin.isDeveloperMode()) return;
-		panelComponent.getChildren().add(LineComponent.builder()
-			.left("Quest")
-			.leftColor(ColorScheme.BRAND_ORANGE_TRANSPARENT)
-			.right("Var")
-			.rightColor(ColorScheme.BRAND_ORANGE_TRANSPARENT)
-			.build()
-		);
-		panelComponent.getChildren().add(LineComponent.builder()
-			.left(getQuest().getName())
-			.leftColor(getConfig().debugColor())
-			.right(getVar() + "")
-			.rightColor(getConfig().debugColor())
-			.build()
-		);
 	}
 
 	public int getVar()

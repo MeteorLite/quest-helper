@@ -27,9 +27,7 @@ package com.questhelper.questhelpers;
 import com.questhelper.QuestHelperConfig;
 import java.util.ArrayList;
 import java.util.Collections;
-import com.questhelper.panel.PanelDetails;
 import com.questhelper.steps.QuestStep;
-import java.util.List;
 
 public abstract class ComplexStateQuestHelper extends QuestHelper
 {
@@ -65,11 +63,6 @@ public abstract class ComplexStateQuestHelper extends QuestHelper
 	public boolean updateQuest()
 	{
 		return true;
-	}
-
-	public List<PanelDetails> getPanels()
-	{
-		return new ArrayList<>();
 	}
 
 	public abstract QuestStep loadStep();

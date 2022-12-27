@@ -28,11 +28,11 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.DetailedOwnerStep;
 import com.questhelper.steps.QuestStep;
 import com.questhelper.steps.WidgetStep;
+import eventbus.events.VarbitChanged;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class BalloonFlight1 extends DetailedOwnerStep
 {
@@ -146,7 +146,6 @@ public class BalloonFlight1 extends DetailedOwnerStep
 		sections = new ArrayList<>(Arrays.asList(section1, section2, section3));
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{

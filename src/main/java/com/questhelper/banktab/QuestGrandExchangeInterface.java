@@ -30,6 +30,8 @@ import com.questhelper.QuestHelperPlugin;
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
+import meteor.Main;
+import meteor.rs.ClientThread;
 import net.runelite.api.Client;
 import net.runelite.api.FontID;
 import net.runelite.api.ScriptEvent;
@@ -42,8 +44,7 @@ import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetType;
-import net.runelite.client.callback.ClientThread;
-import net.runelite.client.ui.JagexColors;
+import net.runelite.client.chat.JagexColors;
 
 public class QuestGrandExchangeInterface
 {
@@ -65,16 +66,13 @@ public class QuestGrandExchangeInterface
 	@Getter
 	private Widget grandExchangeTitle;
 
-	private final Client client;
+	private final Client client = Main.client;
 	private final QuestHelperPlugin questHelper;
-	private final ClientThread clientThread;
+	private final ClientThread clientThread = ClientThread.INSTANCE;
 
-	@Inject
-	public QuestGrandExchangeInterface(Client client, QuestHelperPlugin questHelper, ClientThread clientThread)
+	public QuestGrandExchangeInterface(QuestHelperPlugin questHelper)
 	{
-		this.client = client;
 		this.questHelper = questHelper;
-		this.clientThread = clientThread;
 	}
 
 	public void init()
@@ -166,8 +164,8 @@ public class QuestGrandExchangeInterface
 
 		grandExchangeTitle.setHidden(true);
 
-		client.setVarcStrValue(VarClientStr.INPUT_TEXT, "");
-		client.setVarcIntValue(VarClientInt.INPUT_TYPE, 14);
+		client.setVarcStrValue(VarClientStr.INPUT_TEXT.getIndex(), "");
+		client.setVarcIntValue(VarClientInt.INPUT_TYPE.getIndex(), 14);
 
 		clientThread.invokeLater(() -> updateSearchInterface(false));
 	}
@@ -183,8 +181,8 @@ public class QuestGrandExchangeInterface
 		questBackgroundWidget.revalidate();
 		grandExchangeTitle.setHidden(false);
 		active = true;
-		client.setVarcStrValue(VarClientStr.INPUT_TEXT, "quest-helper");
-		client.setVarcIntValue(VarClientInt.INPUT_TYPE, 14);
+		client.setVarcStrValue(VarClientStr.INPUT_TEXT.getIndex(), "quest-helper");
+		client.setVarcIntValue(VarClientInt.INPUT_TYPE.getIndex(), 14);
 
 		clientThread.invokeLater(() -> updateSearchInterface(true));
 	}

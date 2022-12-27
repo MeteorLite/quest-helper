@@ -36,28 +36,24 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import eventbus.events.GameTick;
+import eventbus.events.GraphicsObjectCreated;
+import eventbus.events.WidgetLoaded;
+import meteor.Main;
 import net.runelite.api.Client;
 import net.runelite.api.GraphicID;
 import net.runelite.api.GraphicsObject;
 import net.runelite.api.ItemID;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.GraphicsObjectCreated;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
 import org.apache.commons.lang3.StringUtils;
 
 public class BaxtorianPuzzle extends DetailedOwnerStep
 {
-	@Inject
-	protected EventBus eventBus;
-
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	private HashMap<String, ItemRequirement> items;
 	private ArrayList<BaxtorianPillar> pillars;
@@ -85,7 +81,7 @@ public class BaxtorianPuzzle extends DetailedOwnerStep
 		currentStep = null;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();
@@ -140,7 +136,7 @@ public class BaxtorianPuzzle extends DetailedOwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGraphicsObjectCreated(GraphicsObjectCreated event)
 	{
 		final GraphicsObject go = event.getGraphicsObject();
@@ -325,7 +321,7 @@ public class BaxtorianPuzzle extends DetailedOwnerStep
 		return steps;
 	}
 
-	@Subscribe
+	@Override
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
 		if (widgetLoaded.getGroupId() == 229)

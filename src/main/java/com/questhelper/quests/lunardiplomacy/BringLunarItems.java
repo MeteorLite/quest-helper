@@ -5,11 +5,10 @@ import com.questhelper.requirements.item.ItemRequirement;
 import com.questhelper.requirements.Requirement;
 import com.questhelper.requirements.var.VarbitRequirement;
 import com.questhelper.steps.NpcStep;
+import eventbus.events.VarbitChanged;
 import net.runelite.api.ItemID;
 import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class BringLunarItems extends NpcStep
 {
@@ -59,7 +58,6 @@ public class BringLunarItems extends NpcStep
 		updateStep();
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{

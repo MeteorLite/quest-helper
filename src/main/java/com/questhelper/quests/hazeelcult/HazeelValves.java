@@ -34,11 +34,11 @@ import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
 import java.util.Arrays;
 import java.util.Collection;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 public class HazeelValves extends DetailedOwnerStep
 {
@@ -83,7 +83,7 @@ public class HazeelValves extends DetailedOwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		Widget widgetText = client.getWidget(229, 1);

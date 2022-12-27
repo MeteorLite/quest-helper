@@ -4,11 +4,11 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.requirements.item.ItemRequirement;
 import com.questhelper.steps.NpcStep;
 import java.util.Collections;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ItemID;
 import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class BringDrezelPureEssenceStep extends NpcStep
 {
@@ -20,7 +20,7 @@ public class BringDrezelPureEssenceStep extends NpcStep
 		essence.addAlternates(ItemID.PURE_ESSENCE);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

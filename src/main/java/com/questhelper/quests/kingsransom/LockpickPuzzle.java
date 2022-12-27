@@ -29,9 +29,9 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.QuestStep;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import net.runelite.api.events.GameTick;
+
+import eventbus.events.GameTick;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 public class LockpickPuzzle extends QuestStep
 {
@@ -61,7 +61,7 @@ public class LockpickPuzzle extends QuestStep
 		this.addText("Tumbler 4: " + client.getVarbitValue(TUMBLER_ANSWERS[3]) + ".");
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSolvedPositionState();

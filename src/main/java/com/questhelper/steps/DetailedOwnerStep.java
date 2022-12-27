@@ -34,10 +34,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import lombok.NonNull;
+import meteor.Main;
+import meteor.ui.overlay.PanelComponent;
 import net.runelite.api.Client;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.ui.overlay.components.PanelComponent;
-import org.apache.commons.lang3.ArrayUtils;
 
 public class DetailedOwnerStep extends QuestStep implements OwnerStep
 {
@@ -45,11 +44,7 @@ public class DetailedOwnerStep extends QuestStep implements OwnerStep
 
 	protected List<Requirement> requirements = new ArrayList<>();
 
-	@Inject
-	protected EventBus eventBus;
-
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	public DetailedOwnerStep(QuestHelper questHelper, Requirement... requirements)
 	{
@@ -85,7 +80,8 @@ public class DetailedOwnerStep extends QuestStep implements OwnerStep
 		if (currentStep == null)
 		{
 			currentStep = step;
-			eventBus.register(currentStep);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			currentStep.startUp();
 			return;
 		}
@@ -93,7 +89,8 @@ public class DetailedOwnerStep extends QuestStep implements OwnerStep
 		if (!step.equals(currentStep))
 		{
 			shutDownStep();
-			eventBus.register(step);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			step.startUp();
 			currentStep = step;
 		}
@@ -103,7 +100,7 @@ public class DetailedOwnerStep extends QuestStep implements OwnerStep
 	{
 		if (currentStep != null)
 		{
-			eventBus.unregister(currentStep);
+			currentStep.unsubscribe();
 			currentStep.shutDown();
 			currentStep = null;
 		}

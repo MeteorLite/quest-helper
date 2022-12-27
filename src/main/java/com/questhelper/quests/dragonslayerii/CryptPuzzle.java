@@ -41,23 +41,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import eventbus.events.GameTick;
+import eventbus.events.WidgetLoaded;
+import meteor.Main;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
 
 public class CryptPuzzle extends DetailedOwnerStep
 {
-	@Inject
-	protected EventBus eventBus;
-
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	private final int TRISTAN = 1;
 	private final int CAMORRA = 2;
@@ -134,7 +130,7 @@ public class CryptPuzzle extends DetailedOwnerStep
 		currentStep = null;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick ignoredEvent)
 	{
 		updateSteps();
@@ -251,7 +247,7 @@ public class CryptPuzzle extends DetailedOwnerStep
 		return Arrays.asList(inspectTomb, takeAivasBust, takeCamorraBust, takeRobertBust, takeTristanBust, placeBustEast, placeBustWest, placeBustNorth, placeBustSouth);
 	}
 
-	@Subscribe
+	@Override
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
 		if (!solutionFound && widgetLoaded.getGroupId() == 748)

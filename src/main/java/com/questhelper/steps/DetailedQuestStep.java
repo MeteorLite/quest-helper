@@ -49,9 +49,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import eventbus.events.GameStateChanged;
+import eventbus.events.GameTick;
+import eventbus.events.ItemDespawned;
+import eventbus.events.ItemSpawned;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import meteor.ui.components.LineComponent;
+import meteor.ui.overlay.PanelComponent;
+import meteor.ui.worldmap.WorldMapPointManager;
+import meteor.util.OverlayUtil;
 import net.runelite.api.GameState;
 import net.runelite.api.Perspective;
 import net.runelite.api.Player;
@@ -61,25 +70,14 @@ import net.runelite.api.Tile;
 import net.runelite.api.TileItem;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
-import net.runelite.client.ui.overlay.worldmap.WorldMapPointManager;
 
 public class DetailedQuestStep extends QuestStep
 {
-	@Inject
-	WorldMapPointManager worldMapPointManager;
+	WorldMapPointManager worldMapPointManager = WorldMapPointManager.INSTANCE;
 
-	@Inject
-	private QuestBank questBank;
+	private QuestBank questBank = QuestBank.INSTANCE;
 
 	protected WorldPoint worldPoint;
 
@@ -213,7 +211,7 @@ public class DetailedQuestStep extends QuestStep
 		recommended.addAll(newRecommended);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameStateChanged(final GameStateChanged event)
 	{
 		if (event.getGameState() == GameState.LOADING)
@@ -269,7 +267,8 @@ public class DetailedQuestStep extends QuestStep
 				LocalPoint localPoint = QuestPerspective.getInstanceLocalPoint(client, location.getWorldPoint());
 				if (localPoint != null)
 				{
-					OverlayUtil.renderTileOverlay(client, graphics, localPoint, combatIcon, questHelper.getConfig().targetOverlayColor());
+					assert combatIcon != null;
+					OverlayUtil.INSTANCE.renderTileOverlay(graphics, localPoint, combatIcon, questHelper.getConfig().targetOverlayColor());
 				}
 			}
 		}
@@ -277,7 +276,7 @@ public class DetailedQuestStep extends QuestStep
 		tileHighlights.keySet().forEach(tile -> checkAllTilesForHighlighting(tile, tileHighlights.get(tile), graphics));
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		currentRender = (currentRender + 1) % MAX_RENDER_SIZE;
@@ -453,7 +452,7 @@ public class DetailedQuestStep extends QuestStep
 
 		if (!requirements.isEmpty() || additionalRequirements.size() > 0)
 		{
-			panelComponent.getChildren().add(LineComponent.builder().left("Requirements:").build());
+			panelComponent.getChildren().add(new LineComponent.Builder().left("Requirements:").build());
 		}
 		Stream<Requirement> stream = requirements.stream();
 		if (additionalRequirements.size() > 0)
@@ -468,7 +467,7 @@ public class DetailedQuestStep extends QuestStep
 
 		if (!recommended.isEmpty())
 		{
-			panelComponent.getChildren().add(LineComponent.builder().left("Recommended:").build());
+			panelComponent.getChildren().add(new LineComponent.Builder().left("Recommended:").build());
 		}
 		Stream<Requirement> streamRecommended = recommended.stream();
 		streamRecommended
@@ -523,7 +522,7 @@ public class DetailedQuestStep extends QuestStep
 		return requirement.shouldHighlightInInventory(client) && requirement.getAllIds().contains(item.getItemId());
 	}
 
-	@Subscribe
+	@Override
 	public void onItemSpawned(ItemSpawned itemSpawned)
 	{
 		TileItem item = itemSpawned.getItem();
@@ -537,7 +536,7 @@ public class DetailedQuestStep extends QuestStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onItemDespawned(ItemDespawned itemDespawned)
 	{
 		Tile tile = itemDespawned.getTile();
@@ -664,12 +663,12 @@ public class DetailedQuestStep extends QuestStep
 						LocalPoint localPoint = QuestPerspective.getInstanceLocalPoint(client, tile.getWorldLocation());
 						if (localPoint != null)
 						{
-							OverlayUtil.renderTileOverlay(client, graphics, localPoint, icon, questHelper.getConfig().targetOverlayColor());
+							OverlayUtil.INSTANCE.renderTileOverlay(graphics, localPoint, icon, questHelper.getConfig().targetOverlayColor());
 						}
 					}
 					else
 					{
-						OverlayUtil.renderPolygon(graphics, poly, questHelper.getConfig().targetOverlayColor());
+						OverlayUtil.INSTANCE.renderPolygon(graphics, poly, questHelper.getConfig().targetOverlayColor());
 					}
 					return;
 				}

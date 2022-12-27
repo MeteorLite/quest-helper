@@ -366,8 +366,11 @@ public enum QuestHelperQuest
 	@Getter
 	private final int id;
 
-	@Getter
-	private final String name;
+	public final String name;
+
+	public String getName() {
+		return name;
+	}
 
 	@Getter
 	private final List<String> keywords;

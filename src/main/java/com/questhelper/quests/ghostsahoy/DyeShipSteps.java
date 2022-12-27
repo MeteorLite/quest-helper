@@ -38,14 +38,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ItemID;
 import net.runelite.api.NpcID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.eventbus.Subscribe;
 
 public class DyeShipSteps extends DetailedOwnerStep
 {
@@ -80,7 +80,7 @@ public class DyeShipSteps extends DetailedOwnerStep
 		currentColours.put("bottom", FlagColour.WHITE);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

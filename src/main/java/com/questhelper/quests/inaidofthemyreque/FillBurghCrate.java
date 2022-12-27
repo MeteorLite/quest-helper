@@ -29,9 +29,9 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.requirements.item.ItemRequirement;
 import com.questhelper.steps.DetailedQuestStep;
 import java.util.Arrays;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ItemID;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class FillBurghCrate extends DetailedQuestStep
 {
@@ -57,7 +57,7 @@ public class FillBurghCrate extends DetailedQuestStep
 		super(questHelper, "Fill the crate with 3 tinderboxes, 10 bronze axes, and either 10 raw snails or 10 raw mackerel.", tinderbox3, bronzeAxe10, rawSnailsOrMackerel);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

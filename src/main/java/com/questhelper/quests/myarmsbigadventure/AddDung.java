@@ -5,11 +5,11 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.ObjectStep;
 import java.util.Arrays;
 import java.util.Collections;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ItemID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class AddDung extends ObjectStep
 {
@@ -24,7 +24,7 @@ public class AddDung extends ObjectStep
 		dung.setHighlightInInventory(true);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

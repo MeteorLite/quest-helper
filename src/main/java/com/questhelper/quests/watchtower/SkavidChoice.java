@@ -27,12 +27,11 @@ package com.questhelper.quests.watchtower;
 import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.NpcStep;
 import com.questhelper.steps.choice.DialogChoiceSteps;
+import eventbus.events.GameTick;
 import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.eventbus.Subscribe;
 
 public class SkavidChoice extends NpcStep
 {
@@ -41,7 +40,7 @@ public class SkavidChoice extends NpcStep
 		super(questHelper, NpcID.MAD_SKAVID, new WorldPoint(2526, 9413, 0), "Talk to the mad skavid.");
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateCorrectChoice();

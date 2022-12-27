@@ -25,7 +25,10 @@
  */
 package com.questhelper;
 
+import androidx.compose.ui.Alignment;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import com.google.common.reflect.ClassPath;
 import com.google.inject.Binder;
@@ -41,7 +44,6 @@ import com.questhelper.overlays.QuestHelperWidgetOverlay;
 import com.questhelper.overlays.QuestHelperWorldArrowOverlay;
 import com.questhelper.overlays.QuestHelperWorldLineOverlay;
 import com.questhelper.overlays.QuestHelperWorldOverlay;
-import com.questhelper.panel.QuestHelperPanel;
 import com.questhelper.questhelpers.QuestDetails;
 import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.requirements.item.ItemRequirement;
@@ -62,9 +64,24 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.swing.SwingUtilities;
+
+import eventbus.events.*;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import meteor.Main;
+import meteor.chat.QueuedMessage;
+import meteor.config.ConfigManager;
+import meteor.game.ItemManager;
+import meteor.game.SpriteManager;
+import meteor.plugins.Plugin;
+import meteor.plugins.PluginDescriptor;
+import meteor.plugins.bank.BankSearch;
+import meteor.rs.ClientThread;
+import meteor.ui.composables.toolbar.ToolbarButton;
+import meteor.ui.overlay.OverlayManager;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -77,36 +94,17 @@ import net.runelite.api.Point;
 import net.runelite.api.QuestState;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.CommandExecuted;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.MenuEntryAdded;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.RuneLite;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
-import net.runelite.client.chat.QueuedMessage;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ClientShutdown;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.SpriteManager;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.bank.BankSearch;
-import net.runelite.client.ui.ClientToolbar;
-import net.runelite.client.ui.NavigationButton;
-import net.runelite.client.ui.components.colorpicker.ColorPickerManager;
-import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.util.Text;
+import net.runelite.client.events.CommandExecuted;
+
+import static meteor.ui.composables.preferences.UiPrefrencesKt.getPluginPanel;
+import static meteor.ui.composables.preferences.UiPrefrencesKt.getPluginPanelIsOpen;
+import static meteor.ui.composables.toolbar.ToolbarKt.addButton;
+import static meteor.ui.composables.toolbar.ToolbarKt.removeButton;
 
 @PluginDescriptor(
 	name = "Quest Helper",
@@ -162,8 +160,7 @@ public class QuestHelperPlugin extends Plugin
 
 	private static final Zone PHOENIX_START_ZONE = new Zone(new WorldPoint(3204, 3488, 0), new WorldPoint(3221, 3501, 0));
 
-	@Inject
-	private QuestBank questBank;
+	private QuestBank questBank = QuestBank.INSTANCE;
 
 	@Getter
 	private QuestHelperBankTagService bankTagService;
@@ -171,63 +168,40 @@ public class QuestHelperPlugin extends Plugin
 	private QuestBankTab bankTagsMain;
 
 	@Getter
-	@Inject
-	private Client client;
-
-	@Inject
-	private ClientToolbar clientToolbar;
+	private Client client = Main.client;
 
 	@Getter
-	@Inject
-	private ClientThread clientThread;
+	private ClientThread clientThread = ClientThread.INSTANCE;
 
-	@Inject
-	private EventBus eventBus;
+	private OverlayManager overlayManager = OverlayManager.INSTANCE;
 
-	@Inject
-	private OverlayManager overlayManager;
+	private QuestHelperOverlay questHelperOverlay = new QuestHelperOverlay(this);
 
-	@Inject
-	private QuestHelperOverlay questHelperOverlay;
+	private QuestHelperWidgetOverlay questHelperWidgetOverlay = new QuestHelperWidgetOverlay(this);
 
-	@Inject
-	private QuestHelperWidgetOverlay questHelperWidgetOverlay;
+	private QuestHelperWorldOverlay questHelperWorldOverlay = new QuestHelperWorldOverlay(this);
 
-	@Inject
-	private QuestHelperWorldOverlay questHelperWorldOverlay;
+	private QuestHelperWorldArrowOverlay questHelperWorldArrowOverlay = new QuestHelperWorldArrowOverlay(this);
 
-	@Inject
-	private QuestHelperWorldArrowOverlay questHelperWorldArrowOverlay;
-
-	@Inject
-	private QuestHelperWorldLineOverlay questHelperWorldLineOverlay;
+	private QuestHelperWorldLineOverlay questHelperWorldLineOverlay = new QuestHelperWorldLineOverlay(this);
 
 	@Getter
-	@Inject
-	private BankSearch bankSearch;
+	private BankSearch bankSearch = BankSearch.INSTANCE;
 
 	@Getter
-	@Inject
-	private ItemManager itemManager;
+	private ItemManager itemManager = ItemManager.INSTANCE;
 
 	@Getter
-	@Inject
-	ChatMessageManager chatMessageManager;
+	ChatMessageManager chatMessageManager = Main.chatMessageManager;
 
-	@Inject
-	private QuestHelperDebugOverlay questHelperDebugOverlay;
+
+	private QuestHelperDebugOverlay questHelperDebugOverlay = new QuestHelperDebugOverlay(this);
 
 	@Getter
-	@Inject
-	private QuestHelperConfig config;
+	private QuestHelperConfig config = (QuestHelperConfig) javaConfiguration(QuestHelperConfig.class);
 
 	@Getter
 	private QuestHelper selectedQuest = null;
-
-	@Getter
-	@Inject
-	@Named("developerMode")
-	private boolean developerMode;
 
 	@Setter
 	private QuestHelper sidebarSelectedQuest = null;
@@ -237,26 +211,21 @@ public class QuestHelperPlugin extends Plugin
 	private Map<String, QuestHelper> quests;
 
 	@Inject
-	SpriteManager spriteManager;
+	SpriteManager spriteManager = SpriteManager.INSTANCE;
 
 	@Getter
-	@Inject
-	private ColorPickerManager colorPickerManager;
-
-	@Getter
-	@Inject
-	ConfigManager configManager;
+	ConfigManager configManager = ConfigManager.INSTANCE;
 
 	@Getter
 	GameStateManager gameStateManager;
 
-	private QuestHelperPanel panel;
-
-	private NavigationButton navButton;
-
 	private boolean loadQuestList;
 
 	private boolean displayNameKnown;
+
+	private ToolbarButton toolbarButton = new ToolbarButton("Quest Helper", "quest_helper.png",
+			"Shows info for quest",
+			Alignment.Companion.getTopCenter(), false, togglePanel());
 
 	public Map<String, QuestHelper> backgroundHelpers = new HashMap<>();
 	public SortedMap<QuestHelperQuest, List<ItemRequirement>> itemRequirements = new TreeMap<>();
@@ -273,27 +242,25 @@ public class QuestHelperPlugin extends Plugin
 	@Getter
 	private int lastTickBankUpdated = -1;
 
-	@Provides
-	QuestHelperConfig getConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(QuestHelperConfig.class);
-	}
-
 	@Override
-	protected void startUp() throws IOException
+	public void onStart()
 	{
 		bankTagService = new QuestHelperBankTagService(this, questBank);
-		bankTagsMain = new QuestBankTab(this);
+		bankTagsMain = new QuestBankTab();
 		bankTagsMain.startUp();
-		injector.injectMembers(bankTagsMain);
-		eventBus.register(bankTagsMain);
+		bankTagsMain.subscribe();
+		bankTagsMain.setEventListening(true);
 
 		gameStateManager = new GameStateManager();
-		injector.injectMembers(gameStateManager);
-		eventBus.register(gameStateManager);
+		gameStateManager.subscribe();
+		gameStateManager.setEventListening(true);
 		gameStateManager.startUp();
 
-		quests = scanAndInstantiate(getClass().getClassLoader());
+		try {
+			quests = scanAndInstantiate(getClass().getClassLoader());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		overlayManager.add(questHelperOverlay);
 		overlayManager.add(questHelperWorldOverlay);
 		overlayManager.add(questHelperWorldArrowOverlay);
@@ -301,40 +268,16 @@ public class QuestHelperPlugin extends Plugin
 		overlayManager.add(questHelperWidgetOverlay);
 
 		final BufferedImage icon = Icon.QUEST_ICON.getImage();
-
-		panel = new QuestHelperPanel(this);
-		navButton = NavigationButton.builder()
-			.tooltip("Quest Helper")
-			.icon(icon)
-			.priority(7)
-			.panel(panel)
-			.build();
-
-		clientToolbar.addNavigation(navButton);
-
-		clientThread.invokeLater(() -> {
-			quests.forEach((name, questHelper) -> {
-				eventBus.register(questHelper);
-				questHelper.setupRequirements();
-				eventBus.unregister(questHelper);
-			});
-			if (client.getGameState() == GameState.LOGGED_IN)
-			{
-				// Update with new items
-				quests.get(QuestHelperQuest.CHECK_ITEMS.getName()).init();
-				getAllItemRequirements();
-				loadQuestList = true;
-			}
-		});
+		addButton(toolbarButton);
 	}
 
 	@Override
-	protected void shutDown()
+	public void onStop()
 	{
-		eventBus.unregister(bankTagsMain);
+		bankTagsMain.unsubscribe();
 		bankTagsMain.shutDown();
 
-		eventBus.unregister(gameStateManager);
+		gameStateManager.unsubscribe();
 
 		overlayManager.remove(questHelperOverlay);
 		overlayManager.remove(questHelperWorldOverlay);
@@ -343,16 +286,55 @@ public class QuestHelperPlugin extends Plugin
 		overlayManager.remove(questHelperWidgetOverlay);
 		overlayManager.remove(questHelperDebugOverlay);
 
-		clientToolbar.removeNavigation(navButton);
 		shutDownQuest(false);
 		bankTagService = null;
 		bankTagsMain = null;
 		quests = null;
+
+		removeButton(toolbarButton);
 	}
 
-	@Subscribe
+	private QuestHelperPluginPanel pluginPanel;
+
+	public Function0<Unit> togglePanel() {
+		return () -> {
+			getPluginPanel().setValue(pluginPanel);
+			togglePluginPanel(toolbarButton);
+			return null;
+		};
+	}
+
+	public void openPluginPanel() {
+		getPluginPanelIsOpen().setValue(true);
+	}
+
+	public void closePluginPanel() {
+		getPluginPanelIsOpen().setValue(false);
+	}
+
+	boolean hasSetup = false;
+
+	@Override
 	public void onGameTick(GameTick event)
 	{
+		if (!hasSetup) {
+			clientThread.invokeLater(() -> {
+				quests.forEach((name, questHelper) -> {
+					questHelper.subscribe();
+					questHelper.setEventListening(true);
+					questHelper.setupRequirements();
+					questHelper.unsubscribe();
+				});
+				if (client.getGameState() == GameState.LOGGED_IN)
+				{
+					// Update with new items
+					quests.get(QuestHelperQuest.CHECK_ITEMS.getName()).init();
+					getAllItemRequirements();
+					loadQuestList = true;
+				}
+			});
+			hasSetup = true;
+		}
 		if (tickAddedCheerer != -1 && tickAddedCheerer < client.getTickCount() - 20)
 		{
 			tickAddedCheerer = -1;
@@ -377,18 +359,18 @@ public class QuestHelperPlugin extends Plugin
 		{
 			if (selectedQuest.getCurrentStep() != null)
 			{
-				panel.updateSteps();
+				//panel.updateSteps();
 				QuestStep currentStep = selectedQuest.getCurrentStep().getSidePanelStep();
 				if (currentStep != null && currentStep != lastStep)
 				{
 					lastStep = currentStep;
-					panel.updateHighlight(client, currentStep);
+					//panel.updateHighlight(client, currentStep);
 				}
-				if (panel.questActive)
+/*				if (panel.questActive)
 				{
-					clientThread.invokeLater(() -> panel.updateItemRequirements(client, questBank.getBankItems()));
-				}
-				panel.updateLocks();
+					//clientThread.invokeLater(() -> panel.updateItemRequirements(client, questBank.getBankItems()));
+				}*/
+				//panel.updateLocks();
 			}
 		}
 		if (loadQuestList)
@@ -399,7 +381,7 @@ public class QuestHelperPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
 		if (event.getItemContainer() == client.getItemContainer(InventoryID.BANK))
@@ -414,7 +396,7 @@ public class QuestHelperPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGameStateChanged(final GameStateChanged event)
 	{
 		final GameState state = event.getGameState();
@@ -422,7 +404,7 @@ public class QuestHelperPlugin extends Plugin
 		if (state == GameState.LOGIN_SCREEN)
 		{
 			questBank.saveBankToConfig();
-			SwingUtilities.invokeLater(() -> panel.refresh(Collections.emptyList(), true, new HashMap<>()));
+			//SwingUtilities.invokeLater(() -> panel.refresh(Collections.emptyList(), true, new HashMap<>()));
 			questBank.emptyState();
 			if (selectedQuest != null && selectedQuest.getCurrentStep() != null)
 			{
@@ -436,9 +418,10 @@ public class QuestHelperPlugin extends Plugin
 			displayNameKnown = false;
 			clientThread.invokeLater(() -> {
 				quests.forEach((name, questHelper) -> {
-					eventBus.register(questHelper);
+					questHelper.subscribe();
+					questHelper.setEventListening(true);
 					questHelper.init();
-					eventBus.unregister(questHelper);
+					questHelper.unsubscribe();
 				});
 				quests.get(QuestHelperQuest.CHECK_ITEMS.getName()).init();
 				getAllItemRequirements();
@@ -446,7 +429,7 @@ public class QuestHelperPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onVarbitChanged(VarbitChanged event)
 	{
 		if (!(client.getGameState() == GameState.LOGGED_IN))
@@ -475,7 +458,7 @@ public class QuestHelperPlugin extends Plugin
 	private final Collection<String> configEvents = Arrays.asList("orderListBy", "filterListBy", "questDifficulty", "showCompletedQuests");
 	private final Collection<String> configItemEvents = Arrays.asList("highlightNeededQuestItems", "highlightNeededMiniquestItems", "highlightNeededAchievementDiaryItems");
 
-	@Subscribe
+	@Override
 	public void onConfigChanged(ConfigChanged event)
 	{
 		if (!event.getGroup().equals("questhelper"))
@@ -513,10 +496,10 @@ public class QuestHelperPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
+/*	@Override
 	public void onCommandExecuted(CommandExecuted commandExecuted)
 	{
-		if (developerMode && commandExecuted.getCommand().equals("questhelperdebug"))
+		if (commandExecuted.getCommand().equals("questhelperdebug"))
 		{
 			if (commandExecuted.getArguments().length == 0 ||
 				(Arrays.stream(commandExecuted.getArguments()).toArray()[0]).equals("disable"))
@@ -526,13 +509,15 @@ public class QuestHelperPlugin extends Plugin
 			else if ((Arrays.stream(commandExecuted.getArguments()).toArray()[0]).equals("enable"))
 				overlayManager.add(questHelperDebugOverlay);
 		}
-	}
+	}*/
 
-	@Subscribe(priority = 100)
+/*
+	@Subscribe()
 	private void onClientShutdown(ClientShutdown e)
 	{
 		questBank.saveBankToConfig();
 	}
+*/
 
 	public void updateQuestList()
 	{
@@ -548,14 +533,14 @@ public class QuestHelperPlugin extends Plugin
 			Map<QuestHelperQuest, QuestState> completedQuests = quests.values()
 				.stream()
 				.collect(Collectors.toMap(QuestHelper::getQuest, q -> q.getState(client)));
-			SwingUtilities.invokeLater(() -> {
+/*			SwingUtilities.invokeLater(() -> {
 				panel.refresh(filteredQuests, false, completedQuests, config.orderListBy().getSections());
-			});
+			});*/
 		}
 	}
 
-	@Subscribe
-	private void onMenuOptionClicked(MenuOptionClicked event)
+	@Override
+	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (event.getMenuAction() != MenuAction.RUNELITE)
 		{
@@ -569,6 +554,10 @@ public class QuestHelperPlugin extends Plugin
 				event.consume();
 				String quest = Text.removeTags(event.getMenuTarget());
 				startUpQuest(quests.get(quest));
+				if (config.autoOpenSidebar()) {
+					getPluginPanel().setValue(pluginPanel);
+					openPluginPanel();
+				}
 				break;
 			case MENUOP_STOPHELPER:
 			case MENUOP_STOPGENERICHELPER:
@@ -583,11 +572,10 @@ public class QuestHelperPlugin extends Plugin
 					.append(cheerer.getStyle().getExamine())
 					.build();
 
-				chatMessageManager.queue(QueuedMessage.builder()
+				chatMessageManager.queue(QueuedMessage.Companion.builder()
 					.type(ChatMessageType.NPC_EXAMINE)
 					.runeLiteFormattedMessage(chatMessage)
-					.timestamp((int) (System.currentTimeMillis() / 1000))
-					.build());
+					.timestamp((int) (System.currentTimeMillis() / 1000)));
 				break;
 		}
 	}
@@ -662,8 +650,8 @@ public class QuestHelperPlugin extends Plugin
 	@Subscribe
 	public void onMenuEntryAdded(MenuEntryAdded event)
 	{
-		int widgetIndex = event.getActionParam0();
-		int widgetID = event.getActionParam1();
+		int widgetIndex = event.getParam0();
+		int widgetID = event.getParam1();
 		MenuEntry[] menuEntries = client.getMenuEntries();
 
 		if (cheerer != null && cheerer.runeLiteObject != null && cheerer.runeLiteObject.getModel() != null &&
@@ -802,12 +790,12 @@ public class QuestHelperPlugin extends Plugin
 
 	private void displayPanel()
 	{
-		SwingUtilities.invokeLater(() -> {
+/*		SwingUtilities.invokeLater(() -> {
 			if (!navButton.isSelected())
 			{
 				navButton.getOnSelect().run();
 			}
-		});
+		});*/
 	}
 
 	private MenuEntry[] addNewEntry(MenuEntry[] menuEntries, String newEntry, String target, int widgetIndex, int widgetID)
@@ -851,11 +839,8 @@ public class QuestHelperPlugin extends Plugin
 				displayPanel();
 			}
 			selectedQuest = questHelper;
-			eventBus.register(selectedQuest);
-			if (isDeveloperMode())
-			{
-				selectedQuest.debugStartup(config);
-			}
+			selectedQuest.subscribe();
+			selectedQuest.setEventListening(true);
 			selectedQuest.startUp(config);
 			if (selectedQuest.getCurrentStep() == null)
 			{
@@ -863,14 +848,17 @@ public class QuestHelperPlugin extends Plugin
 				return;
 			}
 			bankTagsMain.startUp();
-			SwingUtilities.invokeLater(() -> {
+			pluginPanel = new QuestHelperPluginPanel(selectedQuest);
+			getPluginPanel().setValue(pluginPanel);
+			pluginPanel.subscribe();
+/*			SwingUtilities.invokeLater(() -> {
 				panel.removeQuest();
 				panel.addQuest(questHelper, true);
-			});
+			});*/
 		}
 		else
 		{
-			panel.removeQuest();
+			//panel.removeQuest();
 			selectedQuest = null;
 		}
 	}
@@ -881,8 +869,8 @@ public class QuestHelperPlugin extends Plugin
 		{
 			selectedQuest.shutDown();
 			bankTagsMain.shutDown();
-			SwingUtilities.invokeLater(() -> panel.removeQuest());
-			eventBus.unregister(selectedQuest);
+			//SwingUtilities.invokeLater(() -> panel.removeQuest());
+			selectedQuest.unsubscribe();
 
 			// If closing the item checking helper and should still check in background, start it back up in background
 			if (selectedQuest.getQuest() == QuestHelperQuest.CHECK_ITEMS && config.highlightItemsBackground())
@@ -911,9 +899,12 @@ public class QuestHelperPlugin extends Plugin
 			{
 				bankTagsMain.shutDown();
 			}
-			SwingUtilities.invokeLater(() -> panel.removeQuest());
-			eventBus.unregister(selectedQuest);
+			//SwingUtilities.invokeLater(() -> panel.removeQuest());
+			selectedQuest.unsubscribe();
 			selectedQuest = null;
+			pluginPanel.unsubscribe();
+			pluginPanel = null;
+			getPluginPanel().setValue(pluginPanel);
 		}
 	}
 
@@ -950,13 +941,14 @@ public class QuestHelperPlugin extends Plugin
 			if (!questHelper.isCompleted())
 			{
 
-				eventBus.register(questHelper);
+				questHelper.subscribe();
+				questHelper.setEventListening(true);
 				questHelper.startUp(config);
 				backgroundHelpers.put(questHelperName, questHelper);
 				if (questHelper.getCurrentStep() == null)
 				{
 					questHelper.shutDown();
-					eventBus.unregister(questHelper);
+					questHelper.unsubscribe();
 					backgroundHelpers.remove(questHelperName);
 				}
 
@@ -983,7 +975,7 @@ public class QuestHelperPlugin extends Plugin
 		}
 
 		questHelper.shutDown();
-		eventBus.unregister(questHelper);
+		questHelper.unsubscribe();
 		backgroundHelpers.remove(questHelper.getQuest().getName());
 
 	}
@@ -1107,14 +1099,6 @@ public class QuestHelperPlugin extends Plugin
 		try
 		{
 			questHelper = clazz.newInstance();
-			Module questModule = (Binder binder) ->
-			{
-				binder.bind(clazz).toInstance(questHelper);
-				binder.install(questHelper);
-			};
-			Injector questInjector = RuneLite.getInjector().createChildInjector(questModule);
-			questInjector.injectMembers(questHelper);
-			questHelper.setInjector(questInjector);
 			questHelper.setQuest(quest);
 			questHelper.setConfig(config);
 			questHelper.setQuestHelperPlugin(this);

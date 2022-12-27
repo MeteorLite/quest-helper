@@ -27,7 +27,7 @@ package com.questhelper.quests.demonslayer;
 import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.ConditionalStep;
 import com.questhelper.steps.QuestStep;
-import net.runelite.api.events.WidgetLoaded;
+import eventbus.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 

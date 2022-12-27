@@ -37,12 +37,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import eventbus.events.GameTick;
+import eventbus.events.WidgetLoaded;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 public class StonePuzzleStep extends DetailedOwnerStep
 {
@@ -112,13 +112,13 @@ public class StonePuzzleStep extends DetailedOwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();
 	}
 
-	@Subscribe
+	@Override
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
 		if (widgetLoaded.getGroupId() != 229)

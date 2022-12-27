@@ -28,10 +28,10 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.requirements.item.ItemRequirement;
 import com.questhelper.steps.NpcStep;
 import java.util.Collections;
+
+import eventbus.events.GameTick;
 import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class GetRohakDrunk extends NpcStep
 {
@@ -45,7 +45,7 @@ public class GetRohakDrunk extends NpcStep
 		asgoldianAle = asgoldianAle4;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

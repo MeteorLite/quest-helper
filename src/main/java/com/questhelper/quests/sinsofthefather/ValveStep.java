@@ -37,12 +37,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ItemID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 public class ValveStep extends DetailedOwnerStep
 {
@@ -113,7 +113,7 @@ public class ValveStep extends DetailedOwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		Widget widgetNote = client.getWidget(625, 7);

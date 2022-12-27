@@ -30,10 +30,10 @@ import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
 import java.util.Arrays;
 import java.util.Collection;
+
+import eventbus.events.GameTick;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class SearchKilns extends DetailedOwnerStep
 {
@@ -44,7 +44,7 @@ public class SearchKilns extends DetailedOwnerStep
 		super(questHelper, "Search the kilns in Uzer until you find a book.");
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

@@ -31,6 +31,8 @@ import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.util.List;
 import javax.annotation.Nonnull;
+
+import meteor.util.OverlayUtil;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.Perspective;
@@ -39,7 +41,6 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
 public class WorldLines
 {
@@ -167,7 +168,7 @@ public class WorldLines
 			Line2D.Double newLine = getWorldLines(client, startLp, endLp);
 			if (newLine != null)
 			{
-				OverlayUtil.renderPolygon(graphics, newLine, color);
+				OverlayUtil.INSTANCE.renderPolygon(graphics, newLine, color);
 			}
 		}
 	}

@@ -43,11 +43,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
+import meteor.ui.components.LineComponent;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.client.ui.overlay.components.LineComponent;
 
 public class ItemRequirement extends AbstractRequirement
 {
@@ -62,7 +62,7 @@ public class ItemRequirement extends AbstractRequirement
 
 	@Setter
 	@Getter
-	protected int quantity;
+	public int quantity;
 
 	@Getter
 	@Setter
@@ -86,7 +86,7 @@ public class ItemRequirement extends AbstractRequirement
 
 	@Getter
 	@Setter
-	private QuestBank questBank;
+	public QuestBank questBank;
 
 	@Getter
 	protected boolean hadItemLastCheck;
@@ -307,8 +307,8 @@ public class ItemRequirement extends AbstractRequirement
 		}
 
 		Color color = getColor(client, config);
-		lines.add(LineComponent.builder()
-			.left(text.toString())
+		lines.add(new LineComponent.Builder()
+				.left(text.toString())
 			.leftColor(color)
 			.build());
 		lines.addAll(getAdditionalText(client, true, config));
@@ -404,7 +404,7 @@ public class ItemRequirement extends AbstractRequirement
 			{
 				equipColor = config.failColour();
 			}
-			lines.add(LineComponent.builder()
+			lines.add(new LineComponent.Builder()
 				.left(equipText)
 				.leftColor(equipColor)
 				.build());
@@ -412,7 +412,7 @@ public class ItemRequirement extends AbstractRequirement
 
 		if (includeTooltip && this.getTooltip() != null && !check(client))
 		{
-			lines.add(LineComponent.builder()
+			lines.add(new LineComponent.Builder()
 				.left("- " + this.getTooltip())
 				.leftColor(Color.WHITE)
 				.build());

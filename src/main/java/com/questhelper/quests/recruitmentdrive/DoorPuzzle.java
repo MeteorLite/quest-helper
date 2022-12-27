@@ -33,10 +33,10 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
-import net.runelite.api.events.GameTick;
+
+import eventbus.events.GameTick;
+import meteor.game.FontManager;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.FontManager;
 
 public class DoorPuzzle extends QuestStep
 {
@@ -93,7 +93,7 @@ public class DoorPuzzle extends QuestStep
 		setText("Click the highlighted arrows to move the slots to the solution. The answer is " + word + ".");
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick gameTick)
 	{
 		updateSolvedPositionState();
@@ -165,7 +165,7 @@ public class DoorPuzzle extends QuestStep
 				{
 					int widgetX = widget.getCanvasLocation().getX() + (widget.getWidth() / 2) - 4;
 					int widgetY = widget.getCanvasLocation().getY() + (widget.getHeight() / 2) + 4;
-					Font font = FontManager.getRunescapeFont().deriveFont(Font.BOLD, 16);
+					Font font = FontManager.INSTANCE.getRunescapeFont().deriveFont(Font.BOLD, 16);
 					graphics.setFont(font);
 					graphics.drawString(Integer.toString(distance.get(entry.getKey())), widgetX, widgetY);
 				}

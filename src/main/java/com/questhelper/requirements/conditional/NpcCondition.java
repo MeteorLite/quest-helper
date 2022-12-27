@@ -26,10 +26,11 @@ package com.questhelper.requirements.conditional;
 
 import com.questhelper.Zone;
 import java.util.ArrayList;
+
+import eventbus.events.NpcChanged;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.NpcChanged;
 
 public class NpcCondition extends ConditionForStep
 {

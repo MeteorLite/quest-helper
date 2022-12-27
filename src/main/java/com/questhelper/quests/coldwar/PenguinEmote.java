@@ -27,10 +27,9 @@ package com.questhelper.quests.coldwar;
 import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.WidgetDetails;
 import com.questhelper.steps.WidgetStep;
-import java.util.ArrayList;
+import eventbus.events.VarbitChanged;
+
 import java.util.Collections;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class PenguinEmote extends WidgetStep
 {
@@ -46,7 +45,6 @@ public class PenguinEmote extends WidgetStep
 		updateWidgets();
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{

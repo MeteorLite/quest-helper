@@ -24,13 +24,12 @@
  */
 package com.questhelper.requirements;
 
-import com.questhelper.requirements.conditional.Conditions;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
+import meteor.config.ConfigManager;
 import net.runelite.api.Client;
-import net.runelite.client.config.ConfigManager;
 
 public class RuneliteRequirement extends AbstractRequirement
 {
@@ -128,17 +127,17 @@ public class RuneliteRequirement extends AbstractRequirement
 
 	public String getConfigValue()
 	{
-		return configManager.getRSProfileConfiguration(CONFIG_GROUP, runeliteIdentifier);
+		return configManager.getConfiguration(CONFIG_GROUP, runeliteIdentifier);
 	}
 
 	public void setConfigValue(String obj)
 	{
-		configManager.setRSProfileConfiguration(CONFIG_GROUP, runeliteIdentifier, obj);
+		configManager.setConfiguration(CONFIG_GROUP, runeliteIdentifier, obj);
 	}
 
 	public boolean configExists()
 	{
-		return configManager.getRSProfileConfiguration(CONFIG_GROUP, runeliteIdentifier) != null;
+		return configManager.getConfiguration(CONFIG_GROUP, runeliteIdentifier) != null;
 	}
 
 	public void initWithValue(String value)

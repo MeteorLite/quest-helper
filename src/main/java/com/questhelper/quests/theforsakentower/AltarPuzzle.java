@@ -41,24 +41,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import eventbus.events.GameTick;
 import lombok.NonNull;
+import meteor.Main;
+import meteor.ui.overlay.PanelComponent;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class AltarPuzzle extends QuestStep implements OwnerStep
 {
-	@Inject
-	protected EventBus eventBus;
-
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	private QuestStep currentStep;
 
@@ -97,7 +93,7 @@ public class AltarPuzzle extends QuestStep implements OwnerStep
 		currentStep = null;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();
@@ -285,7 +281,8 @@ public class AltarPuzzle extends QuestStep implements OwnerStep
 		if (currentStep == null)
 		{
 			currentStep = step;
-			eventBus.register(currentStep);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			currentStep.startUp();
 			return;
 		}
@@ -293,7 +290,8 @@ public class AltarPuzzle extends QuestStep implements OwnerStep
 		if (!step.equals(currentStep))
 		{
 			shutDownStep();
-			eventBus.register(step);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			step.startUp();
 			currentStep = step;
 		}
@@ -303,7 +301,7 @@ public class AltarPuzzle extends QuestStep implements OwnerStep
 	{
 		if (currentStep != this)
 		{
-			eventBus.unregister(currentStep);
+			currentStep.unsubscribe();
 			currentStep.shutDown();
 			currentStep = null;
 		}

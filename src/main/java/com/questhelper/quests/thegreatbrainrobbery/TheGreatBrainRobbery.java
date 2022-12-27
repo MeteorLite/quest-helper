@@ -58,6 +58,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ItemID;
 import net.runelite.api.NpcID;
 import net.runelite.api.NullObjectID;
@@ -65,8 +67,6 @@ import net.runelite.api.ObjectID;
 import net.runelite.api.QuestState;
 import net.runelite.api.Skill;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 @QuestDescriptor(
 	quest = QuestHelperQuest.THE_GREAT_BRAIN_ROBBERY
@@ -349,7 +349,7 @@ public class TheGreatBrainRobbery extends BasicQuestHelper
 		// received blessing, 3411 = 1
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		int staplesNeeded = 30;

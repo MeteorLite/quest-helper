@@ -45,6 +45,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
+import eventbus.events.ChatMessage;
+import eventbus.events.GameTick;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.IconID;
 import net.runelite.api.ItemID;
@@ -55,9 +58,6 @@ import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.SpriteID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class AgilityDungeonSteps extends DetailedOwnerStep
 {
@@ -451,7 +451,7 @@ public class AgilityDungeonSteps extends DetailedOwnerStep
 		lastPosition = currentPosition;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick ignoredEvent)
 	{
 		if (!shouldUsePath1V2.check(client))
@@ -587,7 +587,7 @@ public class AgilityDungeonSteps extends DetailedOwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onChatMessage(ChatMessage chatMessage)
 	{
 		if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE)

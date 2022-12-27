@@ -38,6 +38,9 @@ import com.questhelper.steps.QuestStep;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import eventbus.events.GameTick;
+import meteor.plugins.fishing.FishingSpot;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -46,9 +49,6 @@ import net.runelite.api.NpcID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.FishingSpot;
 
 public class SlugSteps extends DetailedOwnerStep
 {
@@ -69,7 +69,7 @@ public class SlugSteps extends DetailedOwnerStep
 		super(questHelper);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

@@ -33,10 +33,10 @@ import com.questhelper.steps.ConditionalStep;
 import com.questhelper.steps.DetailedQuestStep;
 import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
+import eventbus.events.VarbitChanged;
+
 import java.util.ArrayList;
 import java.util.List;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class MsHynnAnswerDialogQuizStep extends ConditionalStep
 {
@@ -80,7 +80,6 @@ public class MsHynnAnswerDialogQuizStep extends ConditionalStep
 		talkToMsHynnTerprett.setText("Talk to Ms Hynn Terprett and answer the riddle. " + answer);
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{

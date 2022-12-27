@@ -29,14 +29,13 @@ import com.questhelper.questhelpers.BasicQuestHelper;
 import com.questhelper.requirements.Requirement;
 import com.questhelper.steps.DetailedQuestStep;
 import java.util.List;
-import lombok.NonNull;
-import net.runelite.api.Client;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
-import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
+import eventbus.events.GameTick;
+import lombok.NonNull;
+import meteor.ui.components.LineComponent;
+import meteor.ui.overlay.PanelComponent;
+import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
 
 import javax.inject.Inject;
 import java.awt.*;
@@ -324,7 +323,7 @@ public class DoorPuzzleStep extends DetailedQuestStep
 		return new PuzzleState(createAllSolutions(rowSums), createAllSolutions(columnSums), generateNewGrid(), SIZE * SIZE);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		Widget xAxis = client.getWidget(665, 25);
@@ -381,7 +380,7 @@ public class DoorPuzzleStep extends DetailedQuestStep
 		{
 			String text = "Unable to calculate an answer for this puzzle. Good luck!";
 			Color color = Color.RED;
-			panelComponent.getChildren().add(LineComponent.builder()
+			panelComponent.getChildren().add(new LineComponent.Builder()
 				.left(text)
 				.leftColor(color)
 				.build());

@@ -29,14 +29,13 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.requirements.Requirement;
 import com.questhelper.steps.overlay.DirectionArrow;
 import com.questhelper.steps.tools.QuestPerspective;
+import eventbus.events.*;
 import lombok.Setter;
+import meteor.util.OverlayUtil;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.*;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -132,7 +131,7 @@ public class ObjectStep extends DetailedQuestStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(final GameTick event)
 	{
 		super.onGameTick(event);
@@ -188,7 +187,6 @@ public class ObjectStep extends DetailedQuestStep
 		objects.clear();
 	}
 
-	@Subscribe
 	@Override
 	public void onGameStateChanged(GameStateChanged event)
 	{
@@ -205,49 +203,49 @@ public class ObjectStep extends DetailedQuestStep
 		this.alternateObjectIDs.addAll(Arrays.asList(alternateObjectIDs));
 	}
 
-	@Subscribe
+	@Override
 	public void onGameObjectSpawned(GameObjectSpawned event)
 	{
 		handleObjects(event.getGameObject());
 	}
 
-	@Subscribe
+	@Override
 	public void onGameObjectDespawned(GameObjectDespawned event)
 	{
 		handleRemoveObjects(event.getGameObject());
 	}
 
-	@Subscribe
+	@Override
 	public void onGroundObjectSpawned(GroundObjectSpawned event)
 	{
 		handleObjects(event.getGroundObject());
 	}
 
-	@Subscribe
+	@Override
 	public void onGroundObjectDespawned(GroundObjectDespawned event)
 	{
 		handleRemoveObjects(event.getGroundObject());
 	}
 
-	@Subscribe
+	@Override
 	public void onDecorativeObjectSpawned(DecorativeObjectSpawned event)
 	{
 		handleObjects(event.getDecorativeObject());
 	}
 
-	@Subscribe
+	@Override
 	public void onDecorativeObjectDespawned(DecorativeObjectDespawned event)
 	{
 		handleRemoveObjects(event.getDecorativeObject());
 	}
 
-	@Subscribe
+	@Override
 	public void onWallObjectSpawned(WallObjectSpawned event)
 	{
 		handleObjects(event.getWallObject());
 	}
 
-	@Subscribe
+	@Override
 	public void onWallObjectDespawned(WallObjectDespawned event)
 	{
 		handleRemoveObjects(event.getWallObject());
@@ -291,7 +289,7 @@ public class ObjectStep extends DetailedQuestStep
 				}
 				Color configColor = getQuestHelper().getConfig().targetOverlayColor();
 				Color fillColor = new Color(configColor.getRed(), configColor.getGreen(), configColor.getBlue(), 20);
-				OverlayUtil.renderHoverableArea(graphics, tileObject.getClickbox(), mousePosition, fillColor,
+				OverlayUtil.INSTANCE.renderHoverableArea(graphics, tileObject.getClickbox(), mousePosition, fillColor,
 					getQuestHelper().getConfig().targetOverlayColor().darker(),
 					getQuestHelper().getConfig().targetOverlayColor());
 			}

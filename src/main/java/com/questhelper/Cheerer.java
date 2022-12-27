@@ -32,6 +32,8 @@ import java.util.Random;
 import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import meteor.chat.QueuedMessage;
+import meteor.rs.ClientThread;
 import net.runelite.api.Animation;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -42,11 +44,9 @@ import net.runelite.api.RuneLiteObject;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import java.awt.Color;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
-import net.runelite.client.chat.QueuedMessage;
 
 public class Cheerer
 {
@@ -180,12 +180,11 @@ public class Cheerer
 			.append(this.message)
 			.build();
 
-		chatMessageManager.queue(QueuedMessage.builder()
+		chatMessageManager.queue(QueuedMessage.Companion.builder()
 			.type(ChatMessageType.PUBLICCHAT)
 			.name(style.getDisplayName())
 			.runeLiteFormattedMessage(chatMessage)
-			.timestamp((int) (System.currentTimeMillis() / 1000))
-			.build());
+			.timestamp((int) (System.currentTimeMillis() / 1000)));
 		runeLiteObject.setLocation(lp, client.getPlane());
 
 		runeLiteObject.setActive(true);
@@ -198,14 +197,13 @@ public class Cheerer
 			Model model = style.modelSupplier.apply(this);
 			if (model == null)
 			{
-				return false;
+				return;
 			}
 
 			Animation anim = style.animationSupplier.apply(this);
 
 			runeLiteObject.setAnimation(anim);
 			runeLiteObject.setModel(model);
-			return true;
 		});
 	}
 

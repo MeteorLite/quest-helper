@@ -38,11 +38,12 @@ import com.questhelper.steps.QuestStep;
 import com.questhelper.requirements.conditional.Conditions;
 import java.util.Arrays;
 import java.util.List;
+
+import eventbus.events.GameTick;
 import net.runelite.api.ItemID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.SpriteID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
 
 public class MM2Sabotage extends ConditionalStep
 {

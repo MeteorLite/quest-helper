@@ -175,7 +175,7 @@ public class LairOfTarnRazorlor extends BasicQuestHelper
 	{
 		List<PanelDetails> allSteps = new ArrayList<>();
 		PanelDetails fullQuestPanel = new PanelDetails("Traversing the dungeon", tarnRoute.getDisplaySteps(), combatGear);
-		fullQuestPanel.addSteps(killTarn, enterFinalRoom, pickUpDiary);
+		//fullQuestPanel.addSteps(killTarn, enterFinalRoom, pickUpDiary);
 		allSteps.add(fullQuestPanel);
 		return allSteps;
 	}

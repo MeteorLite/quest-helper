@@ -7,9 +7,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
-import net.runelite.api.events.VarbitChanged;
+
+import eventbus.events.VarbitChanged;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 public class PuzzleStep extends QuestStep
 {
@@ -98,7 +98,7 @@ public class PuzzleStep extends QuestStep
 		updateSolvedPositionState();
 	}
 
-	@Subscribe
+	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{
 		updateSolvedPositionState();

@@ -40,6 +40,15 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+
+import eventbus.events.*;
+import meteor.Main;
+import meteor.chat.QueuedMessage;
+import meteor.game.ItemManager;
+import meteor.plugins.EventSubscriber;
+import meteor.plugins.PluginManager;
+import meteor.rs.ClientThread;
+import meteor.util.QuantityFormatter;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.FontID;
@@ -48,29 +57,17 @@ import net.runelite.api.ScriptEvent;
 import net.runelite.api.ScriptID;
 import net.runelite.api.SpriteID;
 import net.runelite.api.VarClientStr;
-import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.GrandExchangeSearched;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.ScriptCallbackEvent;
-import net.runelite.api.events.ScriptPostFired;
-import net.runelite.api.events.ScriptPreFired;
-import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.util.Text;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetType;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
-import net.runelite.client.chat.QueuedMessage;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.util.QuantityFormatter;
-import net.runelite.client.util.Text;
 
-public class QuestBankTab
+public class QuestBankTab extends EventSubscriber
 {
 	private static final int ITEMS_PER_ROW = 8;
 	private static final int ITEM_VERTICAL_SPACING = 36;
@@ -91,33 +88,29 @@ public class QuestBankTab
 
 	boolean isSwappingDuplicates = false;
 
-	@Inject
-	private ItemManager itemManager;
+	private ItemManager itemManager = ItemManager.INSTANCE;
+
+	private Client client = Main.client;
+
+	private ClientThread clientThread = ClientThread.INSTANCE;
+
+	private ChatMessageManager chatMessageManager = Main.chatMessageManager;
+
+	private QuestBankTabInterface questBankTabInterface = new QuestBankTabInterface();
+
+
+
+	private final QuestHelperPlugin questHelper = (QuestHelperPlugin) PluginManager.INSTANCE.get(QuestHelperPlugin.class);
 
 	@Inject
-	private Client client;
-
-	@Inject
-	private ClientThread clientThread;
-
-	@Inject
-	private ChatMessageManager chatMessageManager;
-
-	@Inject
-	private QuestBankTabInterface questBankTabInterface;
-
-	@Inject
-	private QuestGrandExchangeInterface geButtonWidget;
-
-	private final QuestHelperPlugin questHelper;
+	private QuestGrandExchangeInterface geButtonWidget = new QuestGrandExchangeInterface(questHelper);
 
 	private final HashMap<Widget, BankTabItem> widgetItems = new HashMap<>();
 
 	private final HashMap<BankWidget, BankWidget> fakeToRealItem = new HashMap<>();
 
-	public QuestBankTab(QuestHelperPlugin questHelperPlugin)
+	public QuestBankTab()
 	{
-		questHelper = questHelperPlugin;
 	}
 
 	public void startUp()
@@ -143,10 +136,10 @@ public class QuestBankTab
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGrandExchangeSearched(GrandExchangeSearched event)
 	{
-		final String input = client.getVarcStrValue(VarClientStr.INPUT_TEXT);
+		final String input = client.getVarcStrValue(VarClientStr.INPUT_TEXT.getIndex());
 		String QUEST_BANK_TAG = "quest-helper";
 
 		if (!input.equals(QUEST_BANK_TAG) || questHelper.getSelectedQuest() == null)
@@ -173,7 +166,7 @@ public class QuestBankTab
 		client.setGeSearchResultIds(Shorts.toArray(ids));
 	}
 
-	@Subscribe
+	@Override
 	public void onScriptPreFired(ScriptPreFired event)
 	{
 		int scriptId = event.getScriptId();
@@ -205,7 +198,7 @@ public class QuestBankTab
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onScriptCallbackEvent(ScriptCallbackEvent event)
 	{
 		String eventName = event.getEventName();
@@ -225,7 +218,7 @@ public class QuestBankTab
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
 		if (event.getGroupId() == WidgetID.BANK_GROUP_ID && questHelper.getSelectedQuest() != null)
@@ -234,7 +227,7 @@ public class QuestBankTab
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onClientTick(ClientTick clientTick)
 	{
 		if (!questBankTabInterface.isQuestTabActive() || questBankTabInterface.isHidden()) return;
@@ -255,13 +248,13 @@ public class QuestBankTab
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		questBankTabInterface.handleClick(event);
 	}
 
-	@Subscribe
+	@Override
 	public void onScriptPostFired(ScriptPostFired event)
 	{
 		int SEARCHBOX_LOADED = 750;
@@ -671,7 +664,7 @@ public class QuestBankTab
 			String name = widget.getName();
 			BankTabItem item = widgetItems.get(widget);
 
-			String quantity = QuantityFormatter.formatNumber(item.getQuantity()) + " x ";
+			String quantity = QuantityFormatter.INSTANCE.formatNumber(item.getQuantity()) + " x ";
 			if (item.getQuantity() == -1)
 			{
 				quantity = "some ";
@@ -689,10 +682,9 @@ public class QuestBankTab
 					.append(" " + widget.getText() + ".");
 			}
 
-			chatMessageManager.queue(QueuedMessage.builder()
+			chatMessageManager.queue(QueuedMessage.Companion.builder()
 				.type(ChatMessageType.ITEM_EXAMINE)
-				.runeLiteFormattedMessage(message.build())
-				.build());
+				.runeLiteFormattedMessage(message.build()));
 		}
 	}
 

@@ -26,8 +26,9 @@ package com.questhelper.rewards;
 
 import java.util.Locale;
 import javax.annotation.Nonnull;
+
+import meteor.util.QuantityFormatter;
 import net.runelite.api.Skill;
-import net.runelite.client.util.QuantityFormatter;
 
 public class ExperienceReward implements Reward
 {
@@ -51,6 +52,6 @@ public class ExperienceReward implements Reward
     @Override
     public String getDisplayText()
     {
-        return  QuantityFormatter.formatNumber(experience) + " " + Character.toUpperCase(skill.name().charAt(0)) + skill.name().toLowerCase(Locale.ROOT).substring(1) + " Experience";
+        return  QuantityFormatter.INSTANCE.formatNumber(experience) + " " + Character.toUpperCase(skill.name().charAt(0)) + skill.name().toLowerCase(Locale.ROOT).substring(1) + " Experience";
     }
 }

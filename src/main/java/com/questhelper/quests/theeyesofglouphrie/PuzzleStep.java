@@ -41,7 +41,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import eventbus.events.GameTick;
+import eventbus.events.ItemContainerChanged;
 import lombok.NonNull;
+import meteor.Main;
+import meteor.ui.overlay.PanelComponent;
 import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
@@ -49,20 +54,11 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class PuzzleStep extends QuestStep implements OwnerStep
 {
-	@Inject
-	protected EventBus eventBus;
-
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	protected QuestStep currentStep;
 
@@ -131,7 +127,7 @@ public class PuzzleStep extends QuestStep implements OwnerStep
 		currentStep = null;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();
@@ -517,7 +513,7 @@ public class PuzzleStep extends QuestStep implements OwnerStep
 		return -1;
 	}
 
-	@Subscribe
+	@Override
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
 		if (event.getContainerId() == 440)
@@ -636,7 +632,8 @@ public class PuzzleStep extends QuestStep implements OwnerStep
 		if (currentStep == null)
 		{
 			currentStep = step;
-			eventBus.register(currentStep);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			currentStep.startUp();
 			return;
 		}
@@ -644,7 +641,8 @@ public class PuzzleStep extends QuestStep implements OwnerStep
 		if (!step.equals(currentStep))
 		{
 			shutDownStep();
-			eventBus.register(step);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			step.startUp();
 			currentStep = step;
 		}
@@ -654,7 +652,7 @@ public class PuzzleStep extends QuestStep implements OwnerStep
 	{
 		if (currentStep != null)
 		{
-			eventBus.unregister(currentStep);
+			currentStep.unsubscribe();
 			currentStep.shutDown();
 			currentStep = null;
 		}

@@ -30,10 +30,10 @@ import com.questhelper.steps.tools.QuestPerspective;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import eventbus.events.GameTick;
+import eventbus.events.VarbitChanged;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class MemoryChallenge extends DetailedQuestStep
 {
@@ -53,7 +53,6 @@ public class MemoryChallenge extends DetailedQuestStep
 		setupPaths();
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{
@@ -61,7 +60,7 @@ public class MemoryChallenge extends DetailedQuestStep
 		setupPaths();
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		if (wps.size() == 0)

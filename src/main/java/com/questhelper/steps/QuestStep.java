@@ -25,7 +25,6 @@
 package com.questhelper.steps;
 
 import com.google.inject.Binder;
-import com.google.inject.Inject;
 import com.google.inject.Module;
 import static com.questhelper.overlays.QuestHelperOverlay.TITLED_CONTENT_COLOR;
 import com.questhelper.QuestHelperPlugin;
@@ -50,34 +49,33 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import eventbus.events.VarbitChanged;
+import eventbus.events.WidgetLoaded;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import meteor.Main;
+import meteor.game.ItemManager;
+import meteor.game.SpriteManager;
+import meteor.plugins.EventSubscriber;
+import meteor.rs.ClientThread;
+import meteor.ui.components.LineComponent;
+import meteor.ui.overlay.PanelComponent;
 import net.runelite.api.Client;
 import net.runelite.api.SpriteID;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.WidgetID;
-import net.runelite.client.callback.ClientThread;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.SpriteManager;
-import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
-public abstract class QuestStep implements Module
+public abstract class QuestStep extends EventSubscriber implements Module
 {
-	@Inject
-	protected Client client;
 
-	@Inject
-	protected ClientThread clientThread;
+	protected Client client = Main.client;
 
-	@Inject
-	ItemManager itemManager;
 
-	@Inject
-	SpriteManager spriteManager;
+	protected ClientThread clientThread = ClientThread.INSTANCE;
+
+	ItemManager itemManager = ItemManager.INSTANCE;
+
+	SpriteManager spriteManager = SpriteManager.INSTANCE;
 
 	@Getter
 	protected List<String> text;
@@ -172,10 +170,14 @@ public abstract class QuestStep implements Module
 		clientThread.invokeLater(this::highlightWidgetChoice);
 
 		setupIcon();
+
+		subscribe();
+		setEventListening(true);
 	}
 
 	public void shutDown()
 	{
+		unsubscribe();
 	}
 
 	public void addSubSteps(QuestStep... substep)
@@ -188,7 +190,7 @@ public abstract class QuestStep implements Module
 		this.substeps.addAll(substeps);
 	}
 
-	@Subscribe
+	@Override
 	public void onVarbitChanged(VarbitChanged event)
 	{
 		if (!allowInCutscene)
@@ -206,7 +208,7 @@ public abstract class QuestStep implements Module
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
 		if (event.getGroupId() == WidgetID.DIALOG_OPTION_GROUP_ID) // 219
@@ -379,14 +381,14 @@ public abstract class QuestStep implements Module
 
 	private void addTitleToPanel(PanelComponent panelComponent)
 	{
-		panelComponent.getChildren().add(LineComponent.builder()
+		panelComponent.getChildren().add(new LineComponent.Builder()
 			.left(questHelper.getQuest().getName())
 			.build());
 	}
 
 	private void addTextToPanel(PanelComponent panelComponent, String line)
 	{
-		panelComponent.getChildren().add(LineComponent.builder()
+		panelComponent.getChildren().add(new LineComponent.Builder()
 			.left(line)
 			.leftColor(TITLED_CONTENT_COLOR)
 			.build());

@@ -33,10 +33,10 @@ import com.questhelper.requirements.widget.WidgetTextRequirement;
 import com.questhelper.steps.ConditionalStep;
 import com.questhelper.steps.ObjectStep;
 import com.questhelper.steps.QuestStep;
+import eventbus.events.VarbitChanged;
+
 import java.util.ArrayList;
 import java.util.List;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class SirRenItchoodStep extends ConditionalStep
 {
@@ -75,7 +75,6 @@ public class SirRenItchoodStep extends ConditionalStep
 		enterDoorcode.updateWord(answer);
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{

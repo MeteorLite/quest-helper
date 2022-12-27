@@ -35,16 +35,16 @@ import com.questhelper.steps.QuestStep;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import eventbus.events.VarbitChanged;
+import meteor.Main;
 import net.runelite.api.Client;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class LadyTableStep extends DetailedOwnerStep
 {
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	private Statue[] statues;
 	private final int VARBIT_FINISHED_ROOM = 660;
@@ -68,7 +68,6 @@ public class LadyTableStep extends DetailedOwnerStep
 		clickMissingStatue.setWorldPoint(answerStatue.point);
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{

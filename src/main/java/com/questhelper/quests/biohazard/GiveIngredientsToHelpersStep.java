@@ -32,13 +32,13 @@ import com.questhelper.steps.NpcStep;
 import com.questhelper.steps.QuestStep;
 import java.util.Arrays;
 import java.util.Collection;
+
+import eventbus.events.GameTick;
+import eventbus.events.InteractingChanged;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.InteractingChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class GiveIngredientsToHelpersStep extends DetailedOwnerStep
 {
@@ -70,7 +70,7 @@ public class GiveIngredientsToHelpersStep extends DetailedOwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		if ((currentStep == giveHopsBroline && !sulphuricBroline.check(client))
@@ -81,7 +81,7 @@ public class GiveIngredientsToHelpersStep extends DetailedOwnerStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onInteractingChanged(InteractingChanged event)
 	{
 		if (event.getSource() == client.getLocalPlayer()

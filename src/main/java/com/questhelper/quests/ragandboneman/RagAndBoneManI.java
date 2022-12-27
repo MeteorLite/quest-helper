@@ -55,10 +55,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import eventbus.events.GameTick;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 @QuestDescriptor(
 	quest = QuestHelperQuest.RAG_AND_BONE_MAN_I
@@ -170,7 +169,7 @@ public class RagAndBoneManI extends BasicQuestHelper
 			new ItemRequirement("Jug of vinegar", ItemID.JUG_OF_VINEGAR, 8).alsoCheckBank(questBank).highlighted();
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		AtomicInteger winesNeededQuantity = new AtomicInteger(8);

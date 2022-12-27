@@ -3,11 +3,10 @@ package com.questhelper.quests.deserttreasure;
 import com.questhelper.requirements.item.ItemRequirement;
 import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.NpcStep;
+import eventbus.events.VarbitChanged;
 import net.runelite.api.ItemID;
 import net.runelite.api.NullItemID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class GiveItems extends NpcStep
 {
@@ -44,7 +43,6 @@ public class GiveItems extends NpcStep
 		itemQuantitiesLeft();
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{

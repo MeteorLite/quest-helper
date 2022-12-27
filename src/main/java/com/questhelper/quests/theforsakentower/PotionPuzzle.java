@@ -44,25 +44,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import eventbus.events.GameTick;
+import eventbus.events.WidgetLoaded;
+import meteor.Main;
+import meteor.ui.overlay.PanelComponent;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class PotionPuzzle extends QuestStep implements OwnerStep
 {
-	@Inject
-	protected EventBus eventBus;
-
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	// Potion 1
 	private static final Pattern LINE1 = Pattern.compile("^(.*) is directly left of");
@@ -112,7 +108,7 @@ public class PotionPuzzle extends QuestStep implements OwnerStep
 		currentStep = null;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();
@@ -180,7 +176,8 @@ public class PotionPuzzle extends QuestStep implements OwnerStep
 		if (currentStep == null)
 		{
 			currentStep = step;
-			eventBus.register(currentStep);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			currentStep.startUp();
 			return;
 		}
@@ -188,7 +185,8 @@ public class PotionPuzzle extends QuestStep implements OwnerStep
 		if (!step.equals(currentStep))
 		{
 			shutDownStep();
-			eventBus.register(step);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			step.startUp();
 			currentStep = step;
 		}
@@ -198,7 +196,7 @@ public class PotionPuzzle extends QuestStep implements OwnerStep
 	{
 		if (currentStep != null)
 		{
-			eventBus.unregister(currentStep);
+			currentStep.unsubscribe();
 			currentStep.shutDown();
 			currentStep = null;
 		}
@@ -324,7 +322,7 @@ public class PotionPuzzle extends QuestStep implements OwnerStep
 		return Arrays.asList(goUpLadder, goUpStairs, goDownToFirstFloor, inspectRefinery, searchPotionCupboard, readNote, getFluid, useFluidOnRefinery, activateRefinery);
 	}
 
-	@Subscribe
+	@Override
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
 		if (widgetLoaded.getGroupId() == 291)

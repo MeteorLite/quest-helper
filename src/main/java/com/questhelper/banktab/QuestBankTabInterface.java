@@ -27,8 +27,12 @@
 package com.questhelper.banktab;
 
 import javax.inject.Inject;
+
+import eventbus.events.MenuOptionClicked;
 import lombok.Getter;
 import lombok.Setter;
+import meteor.Main;
+import meteor.plugins.bank.BankSearch;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptEvent;
 import net.runelite.api.ScriptID;
@@ -37,12 +41,10 @@ import net.runelite.api.SpriteID;
 import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.widgets.JavaScriptCallback;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetType;
-import net.runelite.client.plugins.bank.BankSearch;
 
 public class QuestBankTabInterface
 {
@@ -61,14 +63,12 @@ public class QuestBankTabInterface
 	@Getter
 	private Widget questBackgroundWidget;
 
-	private final Client client;
-	private final BankSearch bankSearch;
+	private final Client client = Main.client;
+	private final BankSearch bankSearch = BankSearch.INSTANCE;
 
-	@Inject
-	public QuestBankTabInterface(Client client, BankSearch bankSearch)
+	public QuestBankTabInterface()
 	{
-		this.client = client;
-		this.bankSearch = bankSearch;
+
 	}
 
 	public void init()
@@ -146,8 +146,8 @@ public class QuestBankTabInterface
 			closeTab();
 			// This ensures that when clicking Search when tab is selected, the search input is opened rather
 			// than client trying to close it first
-			client.setVarcStrValue(VarClientStr.INPUT_TEXT, "");
-			client.setVarcIntValue(VarClientInt.INPUT_TYPE, 0);
+			client.setVarcStrValue(VarClientStr.INPUT_TEXT.getIndex(), "");
+			client.setVarcIntValue(VarClientInt.INPUT_TYPE.getIndex(), 0);
 		}
 	}
 

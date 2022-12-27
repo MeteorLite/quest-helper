@@ -32,12 +32,12 @@ import com.questhelper.requirements.var.VarbitRequirement;
 import com.questhelper.steps.DetailedOwnerStep;
 import com.questhelper.steps.QuestStep;
 import com.questhelper.steps.WidgetStep;
+import eventbus.events.GameTick;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class RatCharming extends DetailedOwnerStep
 {
@@ -89,7 +89,7 @@ public class RatCharming extends DetailedOwnerStep
 		startUpStep(clickDone);
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();

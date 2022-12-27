@@ -30,9 +30,9 @@ import com.questhelper.steps.QuestStep;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Arrays;
-import net.runelite.api.events.GameTick;
+
+import eventbus.events.GameTick;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 public class DoorPuzzleStep extends QuestStep
 {
@@ -80,7 +80,7 @@ public class DoorPuzzleStep extends QuestStep
 		updateSolvedPositionState();
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSolvedPositionState();

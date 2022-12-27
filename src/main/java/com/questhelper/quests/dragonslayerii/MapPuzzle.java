@@ -34,10 +34,10 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
-import net.runelite.api.events.VarbitChanged;
+
+import eventbus.events.VarbitChanged;
+import meteor.game.FontManager;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.FontManager;
 
 /* Approach:
 * 1. Arrow pointing what to grab and where to move it to. Do for all pieces
@@ -81,7 +81,7 @@ public class MapPuzzle extends QuestStep
 		updateSolvedPositionState();
 	}
 
-	@Subscribe
+	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{
 		updateSolvedPositionState();
@@ -192,7 +192,7 @@ public class MapPuzzle extends QuestStep
 
 					int widgetX = widget.getCanvasLocation().getX() + (widget.getWidth() / 2) - 4;
 					int widgetY = widget.getCanvasLocation().getY() + (widget.getHeight() / 2) + 4;
-					Font font = FontManager.getRunescapeFont().deriveFont(Font.BOLD, 16);
+					Font font = FontManager.INSTANCE.getRunescapeFont().deriveFont(Font.BOLD, 16);
 					graphics.setFont(font);
 					graphics.drawString(Integer.toString((4 - currentRotationValue[i]) % 4), widgetX, widgetY);
 				}

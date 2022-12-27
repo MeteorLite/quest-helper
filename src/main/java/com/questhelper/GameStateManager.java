@@ -26,14 +26,18 @@ package com.questhelper;
 
 import com.questhelper.requirements.item.KeyringRequirement;
 import java.util.List;
-import javax.inject.Inject;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
 
-public class GameStateManager
+import eventbus.events.ChatMessage;
+import meteor.config.ConfigManager;
+import meteor.plugins.EventSubscriber;
+
+public class GameStateManager extends EventSubscriber
 {
-	@Inject
+	{
+		subscribe();
+		setEventListening(true);
+	}
+
 	ConfigManager configManager;
 
 	List<KeyringRequirement> keyringKeys;
@@ -43,7 +47,7 @@ public class GameStateManager
 		keyringKeys = KeyringCollection.allKeyRequirements(configManager);
 	}
 
-	@Subscribe
+	@Override
 	public void onChatMessage(ChatMessage chatMessage)
 	{
 		if (chatMessage.getMessage().contains("to your key ring."))

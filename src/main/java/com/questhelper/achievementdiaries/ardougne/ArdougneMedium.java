@@ -54,6 +54,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import meteor.plugins.fishing.FishingSpot;
 import net.runelite.api.ItemID;
 import net.runelite.api.NpcID;
 import net.runelite.api.NullObjectID;
@@ -66,7 +68,6 @@ import com.questhelper.QuestDescriptor;
 import com.questhelper.panel.PanelDetails;
 import com.questhelper.steps.QuestStep;
 import net.runelite.api.vars.AccountType;
-import net.runelite.client.game.FishingSpot;
 
 @QuestDescriptor(
 	quest = QuestHelperQuest.ARDOUGNE_MEDIUM

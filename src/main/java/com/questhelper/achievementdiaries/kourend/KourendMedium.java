@@ -47,14 +47,13 @@ import com.questhelper.requirements.var.VarplayerRequirement;
 import com.questhelper.rewards.ItemReward;
 import com.questhelper.rewards.UnlockReward;
 import com.questhelper.steps.*;
+import eventbus.events.GameTick;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 @QuestDescriptor(
 	quest = QuestHelperQuest.KOUREND_MEDIUM
@@ -230,7 +229,7 @@ public class KourendMedium extends ComplexStateQuestHelper
 		molchIsland = new Zone(new WorldPoint(1360, 3640, 0), new WorldPoint(1376, 3625, 0));
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		if (memoirArc == null)

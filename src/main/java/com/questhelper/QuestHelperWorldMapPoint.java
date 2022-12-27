@@ -28,10 +28,11 @@ package com.questhelper;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+
+import meteor.plugins.worldmap.WorldMapPoint;
+import meteor.util.ImageUtil;
 import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.ui.overlay.worldmap.WorldMapPoint;
-import net.runelite.client.util.ImageUtil;
 
 public class QuestHelperWorldMapPoint extends WorldMapPoint
 {
@@ -41,9 +42,9 @@ public class QuestHelperWorldMapPoint extends WorldMapPoint
 	private BufferedImage activeQuestArrow;
 	public QuestHelperWorldMapPoint(final WorldPoint worldPoint, BufferedImage image)
 	{
-		super(worldPoint, null);
+		super(worldPoint);
 
-		BufferedImage iconBackground = ImageUtil.loadImageResource(getClass(), "/util/clue_arrow.png");
+		BufferedImage iconBackground = ImageUtil.INSTANCE.loadImageResource(getClass(), "/util/clue_arrow.png");
 		questWorldImage = new BufferedImage(iconBackground.getWidth(), iconBackground.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
 		Graphics graphics = questWorldImage.getGraphics();
@@ -93,7 +94,7 @@ public class QuestHelperWorldMapPoint extends WorldMapPoint
 		if (activeQuestArrow != newArrow)
 		{
 			activeQuestArrow = arrows.get(rotation);
-			if (isCurrentlyEdgeSnapped())
+			if (getCurrentlyEdgeSnapped())
 			{
 				setImage(arrows.get(rotation));
 			}

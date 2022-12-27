@@ -30,9 +30,9 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
 import com.questhelper.questhelpers.QuestHelper;
-import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
 
 public class QuestHelperWorldArrowOverlay extends Overlay
 {

@@ -29,9 +29,9 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.QuestStep;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import net.runelite.api.events.VarbitChanged;
+
+import eventbus.events.VarbitChanged;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 /* Possible improvement would be to show a number on each square indicating turns remaining to solved position */
 public class PowerPuzzle extends QuestStep
@@ -59,7 +59,7 @@ public class PowerPuzzle extends QuestStep
 		updateSolvedPositionState();
 	}
 
-	@Subscribe
+	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{
 		updateSolvedPositionState();

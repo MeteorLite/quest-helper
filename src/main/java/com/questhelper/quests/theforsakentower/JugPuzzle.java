@@ -47,18 +47,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import eventbus.events.GameTick;
 import lombok.NonNull;
+import meteor.Main;
+import meteor.ui.overlay.PanelComponent;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class JugPuzzle extends QuestStep implements OwnerStep
 {
@@ -67,11 +67,7 @@ public class JugPuzzle extends QuestStep implements OwnerStep
 	private static final Pattern JUG_EMPTIED = Pattern.compile("^You empty the ([0-9])-gallon jug");
 	private static final Pattern JUG_CHECKED = Pattern.compile("^The ([0-9])-gallon jug(?: contains ([0-9]) gallons* of coolant| is empty)");
 
-	@Inject
-	protected EventBus eventBus;
-
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	protected QuestStep currentStep;
 
@@ -111,7 +107,7 @@ public class JugPuzzle extends QuestStep implements OwnerStep
 		currentStep = null;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick ignoredEvent)
 	{
 		updateSteps();
@@ -267,7 +263,8 @@ public class JugPuzzle extends QuestStep implements OwnerStep
 		if (currentStep == null)
 		{
 			currentStep = step;
-			eventBus.register(currentStep);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			currentStep.startUp();
 			return;
 		}
@@ -275,7 +272,8 @@ public class JugPuzzle extends QuestStep implements OwnerStep
 		if (!step.equals(currentStep))
 		{
 			shutDownStep();
-			eventBus.register(step);
+			currentStep.subscribe();
+			currentStep.setEventListening(true);
 			step.startUp();
 			currentStep = step;
 		}
@@ -285,7 +283,7 @@ public class JugPuzzle extends QuestStep implements OwnerStep
 	{
 		if (currentStep != null)
 		{
-			eventBus.unregister(currentStep);
+			currentStep.unsubscribe();
 			currentStep.shutDown();
 			currentStep = null;
 		}

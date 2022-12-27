@@ -40,23 +40,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+
+import eventbus.events.GameStateChanged;
+import eventbus.events.NpcChanged;
+import eventbus.events.NpcDespawned;
+import eventbus.events.NpcSpawned;
 import lombok.Setter;
+import meteor.Main;
+import meteor.util.OverlayUtil;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.NpcChanged;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.ui.overlay.OverlayUtil;
 import static com.questhelper.overlays.QuestHelperWorldOverlay.IMAGE_Z_OFFSET;
 
 public class NpcStep extends DetailedQuestStep
 {
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	private final int npcID;
 	private final List<Integer> alternateNpcIDs = new ArrayList<>();
@@ -158,7 +158,6 @@ public class NpcStep extends DetailedQuestStep
 		npcs.clear();
 	}
 
-	@Subscribe
 	@Override
 	public void onGameStateChanged(GameStateChanged event)
 	{
@@ -169,7 +168,7 @@ public class NpcStep extends DetailedQuestStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onNpcSpawned(NpcSpawned event)
 	{
 		if (event.getNpc().getId() == npcID || alternateNpcIDs.contains(event.getNpc().getId()))
@@ -196,13 +195,13 @@ public class NpcStep extends DetailedQuestStep
 		}
 	}
 
-	@Subscribe
+	@Override
 	public void onNpcDespawned(NpcDespawned event)
 	{
 		npcs.remove(event.getNpc());
 	}
 
-	@Subscribe
+	@Override
 	public void onNpcChanged(NpcChanged npcChanged)
 	{
 		int newNpcId = npcChanged.getNpc().getId();
@@ -235,7 +234,7 @@ public class NpcStep extends DetailedQuestStep
 
 		for (NPC npc : npcs)
 		{
-			OverlayUtil.renderActorOverlayImage(graphics, npc, icon, questHelper.getConfig().targetOverlayColor(),
+			OverlayUtil.INSTANCE.renderActorOverlayImage(graphics, npc, icon, questHelper.getConfig().targetOverlayColor(),
 				IMAGE_Z_OFFSET);
 		}
 	}

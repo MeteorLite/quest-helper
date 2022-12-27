@@ -34,7 +34,7 @@ import com.questhelper.requirements.util.Operation;
 import com.questhelper.requirements.var.VarbitRequirement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.runelite.client.util.Text;
+import net.runelite.api.util.Text;
 
 @AllArgsConstructor
 @Getter

@@ -41,23 +41,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+
+import eventbus.events.ChatMessage;
+import eventbus.events.VarbitChanged;
 import lombok.NonNull;
+import meteor.game.ItemManager;
+import meteor.ui.components.LineComponent;
+import meteor.ui.overlay.PanelComponent;
+import meteor.util.OverlayUtil;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.ItemID;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class MageArenaBossStep extends DetailedQuestStep
 {
-	@Inject
-	ItemManager itemManager;
+	ItemManager itemManager = ItemManager.INSTANCE;
 
 	static String originalTextStart = "Use the Enchanted Symbol to locate the ";
 	static String originalTextEnd = " boss. Only bring food and the symbol for this bit." +
@@ -111,7 +110,7 @@ public class MageArenaBossStep extends DetailedQuestStep
 
 		if (digLocations.size() > 1)
 		{
-			panelComponent.getChildren().add(LineComponent.builder()
+			panelComponent.getChildren().add(new LineComponent.Builder()
 				.left("Possible locations:")
 				.build());
 		}
@@ -123,7 +122,7 @@ public class MageArenaBossStep extends DetailedQuestStep
 				setText(goFightTextStart + abilityDetail);
 			}
 			foundLocation = true;
-			panelComponent.getChildren().add(LineComponent.builder()
+			panelComponent.getChildren().add(new LineComponent.Builder()
 				.left("Unable to establish spawn location. Let the Quest Helper team know the location in Discord so " +
 					"we can add it in")
 				.build());
@@ -136,18 +135,17 @@ public class MageArenaBossStep extends DetailedQuestStep
 				setText(goFightTextStart + abilityDetail);
 			}
 			foundLocation = true;
-			panelComponent.getChildren().add(LineComponent.builder()
+			panelComponent.getChildren().add(new LineComponent.Builder()
 				.left("Spawn location:")
 				.build());
 		}
 
-		locations.forEach((location -> panelComponent.getChildren().add(LineComponent.builder()
+		locations.forEach((location -> panelComponent.getChildren().add(new LineComponent.Builder()
 			.left("- " + location)
 			.leftColor(Color.LIGHT_GRAY)
 			.build())));
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{
@@ -199,10 +197,10 @@ public class MageArenaBossStep extends DetailedQuestStep
 			return;
 		}
 
-		OverlayUtil.renderTileOverlay(client, graphics, localLocation, getSymbolLocation(), questHelper.getConfig().targetOverlayColor());
+		OverlayUtil.INSTANCE.renderTileOverlay(graphics, localLocation, getSymbolLocation(), questHelper.getConfig().targetOverlayColor());
 	}
 
-	@Subscribe
+	@Override
 	public void onChatMessage(ChatMessage chatMessage)
 	{
 		if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE)

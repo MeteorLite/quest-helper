@@ -34,8 +34,10 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import javax.inject.Inject;
 import com.questhelper.questhelpers.QuestHelper;
-import net.runelite.client.ui.overlay.OverlayPanel;
-import net.runelite.client.ui.overlay.OverlayPriority;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPanel;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.ui.overlay.OverlayPriority;
 
 public class QuestHelperOverlay extends OverlayPanel
 {
@@ -47,7 +49,10 @@ public class QuestHelperOverlay extends OverlayPanel
 	public QuestHelperOverlay(QuestHelperPlugin plugin)
 	{
 		this.plugin = plugin;
+		setLayer(OverlayLayer.ALWAYS_ON_TOP);
 		setPriority(OverlayPriority.HIGHEST);
+		setPosition(OverlayPosition.TOP_CENTER);
+		setResizable(false);
 	}
 
 	@Override
@@ -63,7 +68,7 @@ public class QuestHelperOverlay extends OverlayPanel
 		{
 			return null;
 		}
-		questHelper.getCurrentStep().makeOverlayHint(panelComponent, plugin, new ArrayList<>(), new ArrayList<>());
+		questHelper.getCurrentStep().makeOverlayHint(getPanelComponent(), plugin, new ArrayList<>(), new ArrayList<>());
 
 		return super.render(graphics);
 	}

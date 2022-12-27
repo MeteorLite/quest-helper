@@ -30,9 +30,9 @@ import com.questhelper.steps.QuestStep;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import net.runelite.api.events.GameTick;
+
+import eventbus.events.GameTick;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.Subscribe;
 
 public class SelectingCombatGear extends QuestStep
 {
@@ -49,7 +49,7 @@ public class SelectingCombatGear extends QuestStep
 		updateItems();
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateItems();

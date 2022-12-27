@@ -32,15 +32,15 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
 import com.questhelper.questhelpers.QuestHelper;
+import meteor.game.FontManager;
+import meteor.ui.overlay.Overlay;
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPosition;
+import meteor.util.OverlayUtil;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.client.ui.FontManager;
-import net.runelite.client.ui.JagexColors;
-import net.runelite.client.ui.overlay.Overlay;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayUtil;
+import net.runelite.client.chat.JagexColors;
 
 public class QuestHelperWorldOverlay extends Overlay
 {
@@ -48,7 +48,6 @@ public class QuestHelperWorldOverlay extends Overlay
 
 	private final QuestHelperPlugin plugin;
 
-	@Inject
 	public QuestHelperWorldOverlay(QuestHelperPlugin plugin)
 	{
 		setPosition(OverlayPosition.DYNAMIC);
@@ -73,12 +72,12 @@ public class QuestHelperWorldOverlay extends Overlay
 					plugin.getCheerer().runeLiteObject.getModelHeight());
 				if (p != null)
 				{
-					Font overheadFont = FontManager.getRunescapeBoldFont();
+					Font overheadFont = FontManager.INSTANCE.getRunescapeBoldFont();
 					FontMetrics metrics = graphics.getFontMetrics(overheadFont);
 					Point shiftedP = new Point(p.getX() - (metrics.stringWidth(plugin.getCheerer().getMessage()) / 2), p.getY());
 
 					graphics.setFont(overheadFont);
-					OverlayUtil.renderTextLocation(graphics, shiftedP, plugin.getCheerer().getMessage(),
+					OverlayUtil.INSTANCE.renderTextLocation(graphics, shiftedP, plugin.getCheerer().getMessage(),
 						JagexColors.YELLOW_INTERFACE_TEXT);
 				}
 			}

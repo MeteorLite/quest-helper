@@ -27,11 +27,12 @@
 
 package com.questhelper;
 
+import meteor.util.ImageUtil;
+
 import java.awt.image.BufferedImage;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nonnull;
 import javax.swing.ImageIcon;
-import net.runelite.client.util.ImageUtil;
 
 public enum Icon
 {
@@ -68,7 +69,7 @@ public enum Icon
 	 */
 	public BufferedImage getImage()
 	{
-		return ImageUtil.loadImageResource(QuestHelperPlugin.class, file);
+		return ImageUtil.INSTANCE.loadImageResource(QuestHelperPlugin.class, file);
 	}
 
 	/**

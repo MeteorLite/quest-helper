@@ -6,10 +6,11 @@ import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.requirements.Requirement;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+
+import meteor.util.OverlayUtil;
 import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
 public class TileStep extends DetailedQuestStep
 {
@@ -50,6 +51,6 @@ public class TileStep extends DetailedQuestStep
 			return;
 		}
 
-		OverlayUtil.renderPolygon(graphics, poly, questHelper.getConfig().targetOverlayColor());
+		OverlayUtil.INSTANCE.renderPolygon(graphics, poly, questHelper.getConfig().targetOverlayColor());
 	}
 }

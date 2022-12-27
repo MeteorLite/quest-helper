@@ -30,9 +30,10 @@ import com.questhelper.requirements.RuneliteRequirement;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+
+import meteor.config.ConfigManager;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
-import net.runelite.client.config.ConfigManager;
 
 public class KeyringRequirement extends ItemRequirement
 {

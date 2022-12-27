@@ -27,10 +27,9 @@ package com.questhelper.quests.recipefordisaster;
 import com.questhelper.questhelpers.QuestHelper;
 import com.questhelper.steps.NpcStep;
 import com.questhelper.steps.choice.DialogChoiceSteps;
+import eventbus.events.GameTick;
 import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.client.eventbus.Subscribe;
 
 public class AskAboutFishCake extends NpcStep
 {
@@ -40,7 +39,7 @@ public class AskAboutFishCake extends NpcStep
 			"Talk to the Lumbridge Cook and ask him all the options about Pirate Pete.");
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateCorrectChoice();

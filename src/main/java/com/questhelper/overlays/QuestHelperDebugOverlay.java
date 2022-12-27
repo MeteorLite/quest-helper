@@ -33,9 +33,10 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPanel;
-import net.runelite.client.ui.overlay.components.PanelComponent;
+
+import meteor.ui.overlay.OverlayLayer;
+import meteor.ui.overlay.OverlayPanel;
+import meteor.ui.overlay.PanelComponent;
 
 public class QuestHelperDebugOverlay extends OverlayPanel implements QuestDebugRenderer
 {
@@ -55,9 +56,9 @@ public class QuestHelperDebugOverlay extends OverlayPanel implements QuestDebugR
 	{
 		QuestHelper quest = plugin.getSelectedQuest();
 
-		renderDebugOverlay(graphics, plugin, panelComponent);
-		renderDebugWorldOverlayHint(graphics, plugin, quest, panelComponent);
-		renderDebugWidgetOverlayHint(graphics, plugin, quest, panelComponent);
+		renderDebugOverlay(graphics, plugin, getPanelComponent());
+		renderDebugWorldOverlayHint(graphics, plugin, quest, getPanelComponent());
+		renderDebugWidgetOverlayHint(graphics, plugin, quest, getPanelComponent());
 
 		return super.render(graphics);
 	}
@@ -71,9 +72,9 @@ public class QuestHelperDebugOverlay extends OverlayPanel implements QuestDebugR
 			quest = currentQuest;
 		}
 
-		if (plugin.isDeveloperMode() && quest != null)
+/*		if (plugin.isDeveloperMode() && quest != null)
 		{
 			quest.renderDebugOverlay(graphics, plugin, panelComponent);
-		}
+		}*/
 	}
 }

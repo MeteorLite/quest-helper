@@ -32,13 +32,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import meteor.ui.components.LineComponent;
 import net.runelite.api.Client;
-import net.runelite.client.ui.overlay.components.LineComponent;
 
 /**
  * A requirement that must be passed.
  * This is used in both rendering overlays and quest logic.<br>
- * All {@link Requirement}s are run on the {@link net.runelite.client.callback.ClientThread}.
+ * All {@link Requirement}s are run on the {@link net.runelite.client}.
  */
 public interface Requirement
 {
@@ -125,7 +126,7 @@ public interface Requirement
 		String text = getDisplayText();
 		Color color = getColor(client, config);
 
-		lines.add(LineComponent.builder()
+		lines.add(new LineComponent.Builder()
 			.left(text)
 			.leftColor(color)
 			.build());

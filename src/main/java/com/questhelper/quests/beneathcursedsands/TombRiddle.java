@@ -12,23 +12,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import eventbus.events.GameTick;
+import eventbus.events.WidgetLoaded;
+import meteor.Main;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.NullObjectID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.eventbus.EventBus;
-import net.runelite.client.eventbus.Subscribe;
 
 public class TombRiddle extends DetailedOwnerStep
 {
-	@Inject
-	protected EventBus eventBus;
-
-	@Inject
-	protected Client client;
+	protected Client client = Main.client;
 
 	Integer northernEmblem, centreNorthEmblem, centreSouthEmblem, southernEmblem;
 
@@ -81,7 +77,7 @@ public class TombRiddle extends DetailedOwnerStep
 		currentStep = null;
 	}
 
-	@Subscribe
+	@Override
 	public void onGameTick(GameTick event)
 	{
 		updateSteps();
@@ -182,7 +178,7 @@ public class TombRiddle extends DetailedOwnerStep
 		return Arrays.asList(inspectPlaque, obtainEmblems, placeNorthernUrn, placeCentreNorthUrn, placeCentreSouthUrn, placeSouthernUrn, pullLever);
 	}
 
-	@Subscribe
+	@Override
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
 		// The instructions are contained in the Text fields of Widget 749.2's children (IDs 749.3 through 749.13)

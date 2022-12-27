@@ -34,10 +34,10 @@ import com.questhelper.steps.emote.QuestEmote;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import eventbus.events.VarbitChanged;
 import net.runelite.api.NpcID;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
 
 public class MimicChallenge extends DetailedOwnerStep
 {
@@ -59,7 +59,6 @@ public class MimicChallenge extends DetailedOwnerStep
 		talk.addDialogStep("Suppose I may as well have a go.");
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{

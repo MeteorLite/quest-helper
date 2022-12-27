@@ -39,24 +39,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+
+import eventbus.events.ChatMessage;
+import eventbus.events.VarbitChanged;
 import lombok.NonNull;
+import meteor.game.ItemManager;
+import meteor.ui.components.LineComponent;
+import meteor.ui.overlay.PanelComponent;
+import meteor.util.OverlayUtil;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.ItemID;
 import net.runelite.api.Player;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.ui.overlay.OverlayUtil;
-import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class EnchantedKeyDigStep extends DetailedQuestStep
 {
-	@Inject
-	ItemManager itemManager;
+	ItemManager itemManager = ItemManager.INSTANCE;
 
 	@Nullable
 	private EnchantedKeySolver enchantedKeySolver;
@@ -81,32 +80,31 @@ public class EnchantedKeyDigStep extends DetailedQuestStep
 
 		if (digLocations.size() > 1)
 		{
-			panelComponent.getChildren().add(LineComponent.builder()
+			panelComponent.getChildren().add(new LineComponent.Builder()
 				.left("Possible locations:")
 				.build());
 		}
 		else if (digLocations.size() < 1)
 		{
-			panelComponent.getChildren().add(LineComponent.builder()
+			panelComponent.getChildren().add(new LineComponent.Builder()
 				.left("Unable to establish dig location")
 				.build());
 		}
 		{
-			panelComponent.getChildren().add(LineComponent.builder()
+			panelComponent.getChildren().add(new LineComponent.Builder()
 				.left("Dig location:")
 				.build());
 		}
 
 		for (EnchantedKeyDigLocation enchantedKeyDigLocation : digLocations)
 		{
-			panelComponent.getChildren().add(LineComponent.builder()
+			panelComponent.getChildren().add(new LineComponent.Builder()
 				.left("- " + enchantedKeyDigLocation.getArea())
 				.leftColor(Color.LIGHT_GRAY)
 				.build());
 		}
 	}
 
-	@Subscribe
 	@Override
 	public void onVarbitChanged(VarbitChanged varbitChanged)
 	{
@@ -151,10 +149,10 @@ public class EnchantedKeyDigStep extends DetailedQuestStep
 			return;
 		}
 
-		OverlayUtil.renderTileOverlay(client, graphics, localLocation, getSpadeImage(), questHelper.getConfig().targetOverlayColor());
+		OverlayUtil.INSTANCE.renderTileOverlay(graphics, localLocation, getSpadeImage(), questHelper.getConfig().targetOverlayColor());
 	}
 
-	@Subscribe
+	@Override
 	public void onChatMessage(ChatMessage chatMessage)
 	{
 		if (chatMessage.getType() == ChatMessageType.GAMEMESSAGE)
