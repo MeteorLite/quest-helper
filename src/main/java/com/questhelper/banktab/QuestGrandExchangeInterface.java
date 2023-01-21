@@ -91,7 +91,7 @@ public class QuestGrandExchangeInterface
 			QUEST_BUTTON_SIZE,
 			QUEST_BUTTON_SIZE,
 			QUEST_BUTTON_X, QUEST_BUTTON_Y);
-		questBackgroundWidget.setAction(1, VIEW_TAB);
+		//questBackgroundWidget.setAction(1, VIEW_TAB);
 		questBackgroundWidget.setOnOpListener((JavaScriptCallback) this::handleTagTab);
 
 		questIconWidget = createGraphic("", SpriteID.QUESTS_PAGE_ICON_BLUE_QUESTS, QUEST_BUTTON_SIZE - 6,
